@@ -1,0 +1,23 @@
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "browsers": [
+                        ">1%",
+                        "last 4 versions",
+                        "Firefox ESR",
+                        "not ie < 9"
+                    ]
+                }
+            }
+        ],
+        [
+            "@babel/preset-stage-0",
+            {
+                "decoratorsLegacy": true
+            }
+        ]
+    ]
+}
