@@ -10,7 +10,6 @@ export default function Tree(container, options) {
         url: null,
         method: 'GET',
     };
-
     this.treeNodes = [];
     this.nodesById = {};
     this.leafNodesById = {};
@@ -115,7 +114,10 @@ Tree.prototype.bindEvent = function(ele) {
         'click',
         e => {
             let target = e.target;
-            if (target.nodeName === 'LABEL') {
+            if (
+                target.nodeName === 'SPAN' &&
+                target.classList.contains('treejs-switcher')
+            ) {
                 this.onItemClick(target);
             } else if (
                 target.nodeName === 'SPAN' &&
@@ -313,16 +315,21 @@ Tree.createUlEle = function() {
 Tree.createLiEle = function(node) {
     let li = document.createElement('li');
     li.classList.add('treejs-node');
-    let label = document.createElement('label');
+    // let label = document.createElement('label');
     if (node.children && node.children.length) {
-        let span = document.createElement('span');
-        span.classList.add('treejs-switcher');
-        label.appendChild(span);
+        let switcher = document.createElement('span');
+        switcher.classList.add('treejs-switcher');
+        li.appendChild(switcher);
+    } else {
+        li.classList.add('treejs-placeholder');
     }
+    let checkbox = document.createElement('span');
+    checkbox.classList.add('treejs-checkbox');
+    li.appendChild(checkbox);
     let text = document.createTextNode(node.text);
-    label.appendChild(text);
-    label.nodeId = node.id;
-    li.appendChild(label);
+    li.appendChild(text);
+    li.nodeId = node.id;
+    // li.appendChild(label);
     return li;
 };
 
