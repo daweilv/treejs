@@ -1,10 +1,12 @@
 {
-    "name": "tree",
+    "name": "@widgetjs/tree",
     "version": "1.0.0",
-    "main": "./dist/tree.min.js",
+    "description": "a lightly weight tree widget",
+    "main": "dist/tree.min.js",
     "scripts": {
         "build": "webpack --progress"
     },
+    "browserslist": [">1%", "last 4 versions", "Firefox ESR", "not ie < 9"],
     "devDependencies": {
         "@babel/core": "^7.0.0-beta.46",
         "@babel/preset-env": "^7.0.0-beta.46",
@@ -37,6 +39,15 @@
         "webpack-dev-server": "^3.1.4",
         "webpack-merge": "^4.1.2"
     },
-    "dependencies": {},
-    "browserslist": [">1%", "last 4 versions", "Firefox ESR", "not ie < 9"]
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/daweilv/treejs.git"
+    },
+    "keywords": ["js", "tree", "treejs", "tree.js", "widget"],
+    "author": "daweilv",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/daweilv/treejs/issues"
+    },
+    "homepage": "https://github.com/daweilv/treejs#readme"
 }

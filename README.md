@@ -22,7 +22,7 @@ new Tree('#container', {
 });
 
 new Tree('#container', {
-  data: treeData
+  data: treeData,
   values: ['1', '2', '3']
 });
 
