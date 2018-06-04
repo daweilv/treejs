@@ -31,10 +31,10 @@ new Tree('#container', {
     },
 });
 
-new Tree('#container', {
-    url: '/api/treeWithCheckedStatusJson',
-});
+// new Tree('#container', {
+//     url: '/api/treeWithCheckedStatusJson',
+// });
 
-let tree = new Tree /* ... */();
+let tree = new Tree();
 let values = tree.values;
 let selectedNodes = tree.selectedNodes;
