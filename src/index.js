@@ -14,7 +14,6 @@ export default function Tree(container, options) {
     this.nodesById = {};
     this.leafNodesById = {};
     this.liElementsById = {};
-    // this._selectedNodesById = {};
     this._willUpdateNodesById = {};
     this.container = container;
     this.options = Object.assign(defaultOptions, options);
@@ -116,9 +115,14 @@ Tree.prototype.bindEvent = function(ele) {
             let target = e.target;
             if (
                 target.nodeName === 'SPAN' &&
-                target.classList.contains('treejs-switcher')
+                target.classList.contains('treejs-checkbox')
             ) {
-                this.onItemClick(target);
+                this.onItemClick(target.parentNode.nodeId);
+            } else if (
+                target.nodeName === 'LI' &&
+                target.classList.contains('treejs-node')
+            ) {
+                this.onItemClick(target.nodeId);
             } else if (
                 target.nodeName === 'SPAN' &&
                 target.classList.contains('treejs-switcher')
@@ -130,9 +134,8 @@ Tree.prototype.bindEvent = function(ele) {
     );
 };
 
-Tree.prototype.onItemClick = function(target) {
+Tree.prototype.onItemClick = function(id) {
     console.time('onItemClick');
-    const id = target.nodeId;
     this.setValue(id);
     this.updateLiElements();
     console.timeEnd('onItemClick');
@@ -210,15 +213,12 @@ Tree.prototype.markWillUpdateNode = function(node) {
 };
 
 Tree.prototype.onSwitcherClick = function(target) {
-    let liEle = target.parentNode.parentNode;
-    let subUlEle = target.parentNode.nextSibling;
+    let liEle = target.parentNode;
+    let subUlEle = liEle.lastChild;
     if (liEle.classList.contains('treejs-node__close')) {
         liEle.classList.remove('treejs-node__close');
-        // subUlEle.style.transform = 'scaleY(1)';
         subUlEle.style.height = 'auto';
     } else {
-        // subUlEle.style.transform = 'scaleY(0)';
-        // subUlEle.style.height = '0px';
         let height = getComputedStyle(subUlEle).height;
         subUlEle.style.height = height;
         setTimeout(() => {
@@ -315,7 +315,6 @@ Tree.createUlEle = function() {
 Tree.createLiEle = function(node) {
     let li = document.createElement('li');
     li.classList.add('treejs-node');
-    // let label = document.createElement('label');
     if (node.children && node.children.length) {
         let switcher = document.createElement('span');
         switcher.classList.add('treejs-switcher');
@@ -329,7 +328,6 @@ Tree.createLiEle = function(node) {
     let text = document.createTextNode(node.text);
     li.appendChild(text);
     li.nodeId = node.id;
-    // li.appendChild(label);
     return li;
 };
 

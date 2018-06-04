@@ -2,7 +2,6 @@
 @bgcolor-disable: #f5f5f5;
 @greyborder: #d9d9d9;
 @bluebg: #1890ff;
-@left: 0px;
 
 .treejs {
   box-sizing: border-box;
@@ -51,7 +50,7 @@
       border-top: 4px solid rgba(0, 0, 0, 0.65);
     }
   }
-  .treejs-node.treejs-node__close > .treejs-switcher {
+  .treejs-node__close > .treejs-switcher {
     transform: rotate(-90deg);
   }
 
@@ -66,7 +65,6 @@
       cursor: pointer;
       position: absolute;
       top: 2px;
-      // left: @left;
       content: ' ';
       display: block;
       width: 16px;
@@ -78,8 +76,7 @@
       box-shadow: 0 0 2px 1px @bluebg;
     }
   }
-
-  .treejs-node.treejs-node__checked {
+  .treejs-node__checked {
     & > .treejs-checkbox {
       &:before {
         background-color: @bluebg;
@@ -90,7 +87,7 @@
         content: ' ';
         display: block;
         top: 4px;
-        left: @left+ 5px;
+        left: 5px;
         width: 5px;
         height: 9px;
         border: 2px solid #fff;
@@ -100,8 +97,7 @@
       }
     }
   }
-
-  .treejs-node.treejs-node__halfchecked {
+  .treejs-node__halfchecked {
     & > .treejs-checkbox {
       &:before {
         background-color: @bluebg;
@@ -112,7 +108,7 @@
         content: ' ';
         display: block;
         top: 9px;
-        left: @left+3px;
+        left: 3px;
         width: 10px;
         height: 2px;
         background-color: #fff;
@@ -120,37 +116,41 @@
     }
   }
 
-  .treejs-node.treejs-node__disabled {
-    cursor: not-allowed;
-    &:before {
+  .treejs-node__disabled {
+    .treejs-checkbox {
       cursor: not-allowed;
-      border-color: @greyborder !important;
-      background-color: @bgcolor-disable !important;
-    }
-    &:hover:before {
-      box-shadow: none !important;
-    }
-    .treejs-node.treejs-node__checked.treejs-checkbox {
-      &:after {
-        border-color: @greyborder;
+      &:before {
+        cursor: not-allowed;
+        border-color: @greyborder !important;
+        background-color: @bgcolor-disable !important;
+      }
+      &:hover:before {
+        box-shadow: none !important;
       }
     }
-    .treejs-node.treejs-node__halfchecked.treejs-checkbox {
-      &:after {
-        background-color: @greyborder;
+    .treejs-node__checked {
+      & > .treejs-checkbox {
+        &:after {
+          border-color: @greyborder;
+        }
+      }
+    }
+    .treejs-node__halfchecked {
+      & > .treejs-checkbox {
+        &:after {
+          background-color: @greyborder;
+        }
       }
     }
   }
-
-  .treejs-node.treejs-node__disabled.treejs-node__checked {
+  .treejs-node__disabled.treejs-node__checked {
     & > .treejs-checkbox {
       &:after {
         border-color: @greyborder;
       }
     }
   }
-
-  .treejs-node.treejs-node__disabled.treejs-node__halfchecked {
+  .treejs-node__disabled.treejs-node__halfchecked {
     & > .treejs-checkbox {
       &:after {
         background-color: @greyborder;
