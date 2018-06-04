@@ -1,6 +1,6 @@
 {
     "name": "@widgetjs/tree",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "a lightly weight tree widget",
     "main": "dist/tree.min.js",
     "scripts": {
