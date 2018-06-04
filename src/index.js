@@ -71,7 +71,12 @@ Tree.prototype.init = function() {
 
 Tree.prototype.load = function(data) {
     console.time('load');
-    let { treeNodes, nodesById, leafNodesById } = Tree.parseTreeData(data);
+    let {
+        treeNodes,
+        nodesById,
+        leafNodesById,
+        defaultValues,
+    } = Tree.parseTreeData(data);
     this.treeNodes = treeNodes;
     this.nodesById = nodesById;
     this.leafNodesById = leafNodesById;
@@ -80,7 +85,8 @@ Tree.prototype.load = function(data) {
     let ele = document.querySelector(this.container);
     ele.appendChild(treeEle, ele);
     const { values, loaded } = this.options;
-    values && values.length && this.setValues(values);
+    if (values && values.length) defaultValues = values;
+    defaultValues.length && this.setValues(defaultValues);
     loaded && loaded.call(this);
     console.timeEnd('load');
 };
@@ -285,9 +291,11 @@ Tree.parseTreeData = function(data) {
     let treeNodes = deepClone(data);
     let nodesById = {};
     let leafNodesById = {};
+    let values = [];
     const walkTree = function(nodes, parent) {
         nodes.forEach(node => {
             nodesById[node.id] = node;
+            if (node.checked) values.push(node.id);
             if (parent) node.parent = parent;
             if (node.children && node.children.length) {
                 walkTree(node.children, node);
@@ -297,7 +305,7 @@ Tree.parseTreeData = function(data) {
         });
     };
     walkTree(treeNodes);
-    return { treeNodes, nodesById, leafNodesById };
+    return { treeNodes, nodesById, leafNodesById, defaultValues: values };
 };
 
 Tree.createRootEle = function() {

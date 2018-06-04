@@ -26,7 +26,7 @@ import '@widgetjs/tree/dist/tree.min.css';
 
 ```js
 // format
-{"id":"unique_ID","text":"node-0","children":[],"attributes":{}}
+{"id":"unique_ID","text":"node-0","attributes":{},"children":[],"check":true/false}
 ```
 
 ```js
@@ -62,6 +62,10 @@ new Tree('#container', {
     let treeJson = [];
     this.values = treeJson;
   },
+});
+
+new Tree('#container', {
+    url: '/api/treeWithCheckedStatusJson',
 });
 
 let tree = new Tree({
