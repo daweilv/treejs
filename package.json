@@ -1,6 +1,6 @@
 {
     "name": "@widgetjs/tree",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description":
         "a lightweight tree widget, compatible with originaljs/react/vue, 9.6kb size for tree.min.js&tree.min.css without gzip.",
     "main": "dist/tree.min.js",
