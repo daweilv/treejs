@@ -83,7 +83,8 @@ Tree.prototype.load = function(data) {
     let treeEle = this.render(this.treeNodes);
     this.bindEvent(treeEle);
     let ele = document.querySelector(this.container);
-    ele.appendChild(treeEle, ele);
+    empty(ele);
+    ele.appendChild(treeEle);
     const { values, loaded } = this.options;
     if (values && values.length) defaultValues = values;
     defaultValues.length && this.setValues(defaultValues);
@@ -353,4 +354,9 @@ function arrayDistinct(arr) {
         }
     });
     return newArr;
+}
+function empty(ele) {
+    while (ele.firstChild) {
+        ele.removeChild(ele.firstChild);
+    }
 }

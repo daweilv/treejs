@@ -1,4 +1,4 @@
-# treejs
+# @widgetjs/tree
 
 a lightweight tree widget, compatible with originaljs/react/vue, 9.6kb size for tree.min.js&tree.min.css without gzip.
 

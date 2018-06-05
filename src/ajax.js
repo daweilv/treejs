@@ -22,7 +22,15 @@ export default function(_options) {
         xhq.setRequestHeader('Content-Type', options['Content-Type']);
         xhq.send(postData);
     } else if (options.method.toUpperCase() === 'GET') {
-        xhq.open(options.method, options.url + '?' + postData, options.async);
+        let url = options.url;
+        if (postData) {
+            if (url.indexOf('?') !== -1) {
+                url += '&' + postData;
+            } else {
+                url += '?' + postData;
+            }
+        }
+        xhq.open(options.method, url, options.async);
         xhq.setRequestHeader('Content-Type', options['Content-Type']);
         xhq.send(null);
     }

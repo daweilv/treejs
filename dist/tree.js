@@ -1,6 +1,6 @@
 /*!
  * treejs
- * @version 1.0.2
+ * @version 1.1.0
  * @see https://github.com/daweilv/treejs
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -189,7 +189,8 @@ Tree.prototype.load = function (data) {
   var treeEle = this.render(this.treeNodes);
   this.bindEvent(treeEle);
   var ele = document.querySelector(this.container);
-  ele.appendChild(treeEle, ele);
+  empty(ele);
+  ele.appendChild(treeEle);
   var _this$options2 = this.options,
       values = _this$options2.values,
       loaded = _this$options2.loaded;
@@ -481,6 +482,12 @@ function arrayDistinct(arr) {
   return newArr;
 }
 
+function empty(ele) {
+  while (ele.firstChild) {
+    ele.removeChild(ele.firstChild);
+  }
+}
+
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -519,7 +526,17 @@ function _default(_options) {
     xhq.setRequestHeader('Content-Type', options['Content-Type']);
     xhq.send(postData);
   } else if (options.method.toUpperCase() === 'GET') {
-    xhq.open(options.method, options.url + '?' + postData, options.async);
+    var url = options.url;
+
+    if (postData) {
+      if (url.indexOf('?') !== -1) {
+        url += '&' + postData;
+      } else {
+        url += '?' + postData;
+      }
+    }
+
+    xhq.open(options.method, url, options.async);
     xhq.setRequestHeader('Content-Type', options['Content-Type']);
     xhq.send(null);
   }
