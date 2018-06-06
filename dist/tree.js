@@ -1,6 +1,6 @@
 /*!
  * treejs
- * @version 1.1.0
+ * @version 1.2.0
  * @see https://github.com/daweilv/treejs
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -103,9 +103,12 @@ __webpack_require__(2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Tree(container, options) {
+  var _this = this;
+
   var defaultOptions = {
     selectMode: 'checkbox',
     values: [],
+    disables: [],
     beforeLoad: null,
     loaded: null,
     url: null,
@@ -127,6 +130,14 @@ function Tree(container, options) {
         return this.setValues(arrayDistinct(values));
       }
     },
+    disables: {
+      get: function get() {
+        return this.getDisables();
+      },
+      set: function set(values) {
+        return this.setDisables(arrayDistinct(values));
+      }
+    },
     selectedNodes: {
       get: function get() {
         var nodes = [];
@@ -142,68 +153,89 @@ function Tree(container, options) {
 
         return nodes;
       }
+    },
+    disabledNodes: {
+      get: function get() {
+        var nodes = [];
+        var nodesById = this.nodesById;
+
+        for (var id in nodesById) {
+          if (nodesById.hasOwnProperty(id) && nodesById[id].disabled) {
+            var node = Object.assign({}, nodesById[id]);
+            delete node.parent;
+            nodes.push(node);
+          }
+        }
+
+        return nodes;
+      }
     }
   });
 
   if (this.options.url) {
-    this.init();
+    this.load(function (data) {
+      _this.init(data);
+    });
   } else {
-    this.load(this.options.data);
+    this.init(this.options.data);
   }
 }
 
-Tree.prototype.init = function () {
-  var _this = this;
-
-  var _this$options = this.options,
-      url = _this$options.url,
-      method = _this$options.method,
-      beforeLoad = _this$options.beforeLoad;
-  (0, _ajax.default)({
-    url: url,
-    method: method,
-    success: function success(result) {
-      var data = result;
-
-      if (beforeLoad) {
-        data = beforeLoad(result);
-      }
-
-      _this.load(data);
-    }
-  });
-};
-
-Tree.prototype.load = function (data) {
-  console.time('load');
+Tree.prototype.init = function (data) {
+  console.time('init');
 
   var _Tree$parseTreeData = Tree.parseTreeData(data),
       treeNodes = _Tree$parseTreeData.treeNodes,
       nodesById = _Tree$parseTreeData.nodesById,
       leafNodesById = _Tree$parseTreeData.leafNodesById,
-      defaultValues = _Tree$parseTreeData.defaultValues;
+      defaultValues = _Tree$parseTreeData.defaultValues,
+      defaultDisables = _Tree$parseTreeData.defaultDisables;
 
   this.treeNodes = treeNodes;
   this.nodesById = nodesById;
   this.leafNodesById = leafNodesById;
-  var treeEle = this.render(this.treeNodes);
-  this.bindEvent(treeEle);
-  var ele = document.querySelector(this.container);
-  empty(ele);
-  ele.appendChild(treeEle);
-  var _this$options2 = this.options,
-      values = _this$options2.values,
-      loaded = _this$options2.loaded;
+  this.render(this.treeNodes);
+  var _this$options = this.options,
+      values = _this$options.values,
+      disables = _this$options.disables,
+      loaded = _this$options.loaded;
   if (values && values.length) defaultValues = values;
   defaultValues.length && this.setValues(defaultValues);
+  if (disables && disables.length) defaultDisables = disables;
+  defaultDisables.length && this.setDisables(defaultDisables);
   loaded && loaded.call(this);
-  console.timeEnd('load');
+  console.timeEnd('init');
+};
+
+Tree.prototype.load = function (callback) {
+  console.time('load');
+  var _this$options2 = this.options,
+      url = _this$options2.url,
+      method = _this$options2.method,
+      beforeLoad = _this$options2.beforeLoad;
+  (0, _ajax.default)({
+    url: url,
+    method: method,
+    success: function success(result) {
+      var data = result;
+      console.time('load');
+
+      if (beforeLoad) {
+        data = beforeLoad(result);
+      }
+
+      callback(data);
+    }
+  });
 };
 
 Tree.prototype.render = function (treeNodes) {
   var treeEle = Tree.createRootEle();
   treeEle.appendChild(this.buildTree(treeNodes));
-  return treeEle;
+  this.bindEvent(treeEle);
+  var ele = document.querySelector(this.container);
+  empty(ele);
+  ele.appendChild(treeEle);
 };
 
 Tree.prototype.buildTree = function (nodes) {
@@ -247,8 +279,13 @@ Tree.prototype.bindEvent = function (ele) {
 
 Tree.prototype.onItemClick = function (id) {
   console.time('onItemClick');
-  this.setValue(id);
-  this.updateLiElements();
+  var node = this.nodesById[id];
+
+  if (!node.disabled) {
+    this.setValue(id);
+    this.updateLiElements();
+  }
+
   console.timeEnd('onItemClick');
 };
 
@@ -259,8 +296,8 @@ Tree.prototype.setValue = function (value) {
   var status = prevStatus === 1 || prevStatus === 2 ? 0 : 2;
   node.status = status;
   this.markWillUpdateNode(node);
-  this.walkUp(node);
-  this.walkDown(node);
+  this.walkUp(node, 'status');
+  this.walkDown(node, 'status');
 };
 
 Tree.prototype.getValues = function () {
@@ -287,12 +324,59 @@ Tree.prototype.setValues = function (values) {
   this.updateLiElements();
 };
 
+Tree.prototype.setDisable = function (value) {
+  var node = this.nodesById[value];
+  if (!node) return;
+  var prevDisabled = node.disabled;
+
+  if (!prevDisabled) {
+    node.disabled = true;
+    this.markWillUpdateNode(node);
+    this.walkUp(node, 'disabled');
+    this.walkDown(node, 'disabled');
+  }
+};
+
+Tree.prototype.getDisables = function () {
+  var values = [];
+
+  for (var id in this.leafNodesById) {
+    if (this.leafNodesById.hasOwnProperty(id)) {
+      if (this.leafNodesById[id].disabled) {
+        values.push(id);
+      }
+    }
+  }
+
+  return values;
+};
+
+Tree.prototype.setDisables = function (values) {
+  var _this5 = this;
+
+  this.emptyNodesDisable();
+  values.forEach(function (value) {
+    _this5.setDisable(value);
+  });
+  this.updateLiElements();
+};
+
 Tree.prototype.emptyNodesCheckStatus = function () {
   var willUpdateNodesById = this._willUpdateNodesById = this.getSelectedNodesById();
 
   for (var id in willUpdateNodesById) {
-    if (willUpdateNodesById.hasOwnProperty(id)) {
+    if (willUpdateNodesById.hasOwnProperty(id) && !willUpdateNodesById.disabled) {
       willUpdateNodesById[id].status = 0;
+    }
+  }
+};
+
+Tree.prototype.emptyNodesDisable = function () {
+  var willUpdateNodesById = this._willUpdateNodesById = this.getDisabledNodesById();
+
+  for (var id in willUpdateNodesById) {
+    if (willUpdateNodesById.hasOwnProperty(id)) {
+      willUpdateNodesById[id].disabled = false;
     }
   }
 };
@@ -310,12 +394,25 @@ Tree.prototype.getSelectedNodesById = function () {
   return obj;
 };
 
+Tree.prototype.getDisabledNodesById = function () {
+  var obj = {};
+  var nodesById = this.nodesById;
+
+  for (var id in nodesById) {
+    if (nodesById.hasOwnProperty(id) && nodesById[id].disabled) {
+      obj[id] = nodesById[id];
+    }
+  }
+
+  return obj;
+};
+
 Tree.prototype.updateLiElements = function () {
   var willUpdateNodesById = this._willUpdateNodesById;
 
   for (var id in willUpdateNodesById) {
     if (willUpdateNodesById.hasOwnProperty(id)) {
-      this.updateLiElement(id, willUpdateNodesById[id].status);
+      this.updateLiElement(willUpdateNodesById[id]);
     }
   }
 
@@ -343,48 +440,58 @@ Tree.prototype.onSwitcherClick = function (target) {
   }
 };
 
-Tree.prototype.walkUp = function (node) {
+Tree.prototype.walkUp = function (node, changeState) {
   var parent = node.parent;
 
   if (parent) {
-    var pStatus = null;
-    var statusCount = 0;
-    parent.children.forEach(function (node) {
-      if (!isNaN(node.status)) statusCount += node.status;
-    });
+    if (changeState === 'status') {
+      var pStatus = null;
+      var statusCount = 0;
+      parent.children.forEach(function (node) {
+        if (!isNaN(node.status)) statusCount += node.status;
+      });
 
-    if (statusCount) {
-      pStatus = statusCount === parent.children.length * 2 ? 2 : 1;
-    } else {
-      pStatus = 0;
-    }
+      if (statusCount) {
+        pStatus = statusCount === parent.children.length * 2 ? 2 : 1;
+      } else {
+        pStatus = 0;
+      }
 
-    if (parent.status !== pStatus) {
+      if (parent.status === pStatus) return;
       parent.status = pStatus;
-      this.markWillUpdateNode(parent);
-      this.walkUp(parent);
+    } else {
+      var pDisabled = true;
+      parent.children.forEach(function (node) {
+        pDisabled = pDisabled && node.disabled;
+      });
+      if (parent.disabled === pDisabled) return;
+      parent.disabled = pDisabled;
     }
+
+    this.markWillUpdateNode(parent);
+    this.walkUp(parent, changeState);
   }
 };
 
-Tree.prototype.walkDown = function (node) {
-  var _this5 = this;
+Tree.prototype.walkDown = function (node, changeState) {
+  var _this6 = this;
 
   if (node.children && node.children.length) {
     node.children.forEach(function (child) {
-      child.status = node.status;
+      if (changeState === 'status' && child.disabled) return;
+      child[changeState] = node[changeState];
 
-      _this5.markWillUpdateNode(child);
+      _this6.markWillUpdateNode(child);
 
-      _this5.walkDown(child);
+      _this6.walkDown(child, changeState);
     });
   }
 };
 
-Tree.prototype.updateLiElement = function (id, status) {
-  var classList = this.liElementsById[id].classList;
+Tree.prototype.updateLiElement = function (node) {
+  var classList = this.liElementsById[node.id].classList;
 
-  switch (status) {
+  switch (node.status) {
     case 0:
       classList.remove('treejs-node__halfchecked', 'treejs-node__checked');
       break;
@@ -398,8 +505,15 @@ Tree.prototype.updateLiElement = function (id, status) {
       classList.remove('treejs-node__halfchecked');
       classList.add('treejs-node__checked');
       break;
+  }
 
-    default:
+  switch (node.disabled) {
+    case true:
+      if (!classList.contains('treejs-node__disabled')) classList.add('treejs-node__disabled');
+      break;
+
+    case false:
+      if (classList.contains('treejs-node__disabled')) classList.remove('treejs-node__disabled');
       break;
   }
 };
@@ -409,11 +523,13 @@ Tree.parseTreeData = function (data) {
   var nodesById = {};
   var leafNodesById = {};
   var values = [];
+  var disables = [];
 
   var walkTree = function walkTree(nodes, parent) {
     nodes.forEach(function (node) {
       nodesById[node.id] = node;
       if (node.checked) values.push(node.id);
+      if (node.disabled) disables.push(node.id);
       if (parent) node.parent = parent;
 
       if (node.children && node.children.length) {
@@ -429,7 +545,8 @@ Tree.parseTreeData = function (data) {
     treeNodes: treeNodes,
     nodesById: nodesById,
     leafNodesById: leafNodesById,
-    defaultValues: values
+    defaultValues: values,
+    defaultDisables: disables
   };
 };
 

@@ -1,6 +1,6 @@
 /*!
  * treejs
- * @version 1.1.0
+ * @version 1.2.0
  * @see https://github.com/daweilv/treejs
  */
 .treejs {
@@ -111,6 +111,10 @@
   width: 10px;
   height: 2px;
   background-color: #fff;
+}
+.treejs .treejs-node__disabled {
+  cursor: not-allowed;
+  color: rgba(0, 0, 0, 0.25);
 }
 .treejs .treejs-node__disabled .treejs-checkbox {
   cursor: not-allowed;

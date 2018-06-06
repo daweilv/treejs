@@ -74,6 +74,14 @@ let tree = new Tree({
 });
 // get values of selected leaves
 let values = tree.values;
-// get all selected nodes with individual data you send
+// set selected nodes(parent node or leaf node)
+tree.values = ["0-1"];
+// get all selected nodes with attributes
 let selectedNodes = tree.selectedNodes;
+// get values of disabled leaves
+let disables = tree.disables;
+// set disabled nodes(parent node or leaf node), disabled nodes will be readonly and unchangeable.
+tree.disables = ["0-1"];
+// get all disabled nodes with attributes
+let disabledNodes = tree.disabledNodes;
 ```
