@@ -44,19 +44,34 @@ module.exports = {
         ],
     },
     plugins: [
-        // new CleanWebpackPlugin(['dist']),
         new MiniCssExtractPlugin({
             filename: '[name].css',
         }),
         new UglifyJSPlugin({
             include: /\.min\.js$/,
+            cache: true,
             parallel: true,
+            sourceMap: true,
+            uglifyOptions: {
+                compress: {
+                    warnings: false,
+                    comparisons: false,
+                    drop_console: true,
+                },
+                mangle: {
+                    safari10: true,
+                },
+                output: {
+                    comments: false,
+                    ascii_only: true,
+                },
+            },
         }),
         new OptimizeCSSAssetsPlugin({
             assetNameRegExp: /\.min\.css$/,
         }),
         new webpack.BannerPlugin(
-            'treejs\n@version 1.3.0\n@see https://github.com/daweilv/treejs'
+            'treejs\n@version 1.4.0\n@see https://github.com/daweilv/treejs'
         ),
     ],
 };
