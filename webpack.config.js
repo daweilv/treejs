@@ -43,29 +43,34 @@ module.exports = {
             },
         ],
     },
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new UglifyJSPlugin({
+                include: /\.min\.js$/,
+                cache: true,
+                parallel: true,
+                sourceMap: true,
+                uglifyOptions: {
+                    compress: {
+                        warnings: false,
+                        comparisons: false,
+                        drop_console: true,
+                    },
+                    mangle: {
+                        safari10: true,
+                    },
+                    output: {
+                        comments: false,
+                        ascii_only: true,
+                    },
+                },
+            }),
+        ],
+    },
     plugins: [
         new MiniCssExtractPlugin({
             filename: '[name].css',
-        }),
-        new UglifyJSPlugin({
-            include: /\.min\.js$/,
-            cache: true,
-            parallel: true,
-            sourceMap: true,
-            uglifyOptions: {
-                compress: {
-                    warnings: false,
-                    comparisons: false,
-                    drop_console: true,
-                },
-                mangle: {
-                    safari10: true,
-                },
-                output: {
-                    comments: false,
-                    ascii_only: true,
-                },
-            },
         }),
         new OptimizeCSSAssetsPlugin({
             assetNameRegExp: /\.min\.css$/,
