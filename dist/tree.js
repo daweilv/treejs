@@ -1,6 +1,6 @@
 /*!
  * treejs
- * @version 1.4.1
+ * @version 1.5.0
  * @see https://github.com/daweilv/treejs
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -147,6 +147,7 @@ function Tree(container, options) {
           if (nodesById.hasOwnProperty(id) && (nodesById[id].status === 1 || nodesById[id].status === 2)) {
             var node = Object.assign({}, nodesById[id]);
             delete node.parent;
+            delete node.children;
             nodes.push(node);
           }
         }

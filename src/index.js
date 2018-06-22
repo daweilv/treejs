@@ -48,6 +48,7 @@ export default function Tree(container, options) {
                     ) {
                         let node = Object.assign({}, nodesById[id]);
                         delete node.parent;
+                        delete node.children;
                         nodes.push(node);
                     }
                 }
