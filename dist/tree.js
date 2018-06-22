@@ -1,6 +1,6 @@
 /*!
  * treejs
- * @version 1.4.0
+ * @version 1.4.1
  * @see https://github.com/daweilv/treejs
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -218,7 +218,7 @@ Tree.prototype.load = function (callback) {
     method: method,
     success: function success(result) {
       var data = result;
-      console.time('load');
+      console.timeEnd('load');
 
       if (beforeLoad) {
         data = beforeLoad(result);

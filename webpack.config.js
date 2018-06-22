@@ -76,7 +76,7 @@ module.exports = {
             assetNameRegExp: /\.min\.css$/,
         }),
         new webpack.BannerPlugin(
-            'treejs\n@version 1.4.0\n@see https://github.com/daweilv/treejs'
+            'treejs\n@version 1.4.1\n@see https://github.com/daweilv/treejs'
         ),
     ],
 };

@@ -112,7 +112,7 @@ Tree.prototype.load = function(callback) {
         method: method,
         success: result => {
             let data = result;
-            console.time('load');
+            console.timeEnd('load');
             if (beforeLoad) {
                 data = beforeLoad(result);
             }
