@@ -2,6 +2,9 @@
 
 a lightweight tree widget, compatible with originaljs / react / vue.
 
+[Online Demo](https://daweilv.github.io/treejs/)
+![demo.gif](https://daweilv.github.io/treejs/demo.gif)
+
 # Install
 
 `npm i -S @widgetjs/tree`
