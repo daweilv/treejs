@@ -1,6 +1,6 @@
 /*!
  * treejs
- * @version 1.5.0
+ * @version 1.6.2
  * @see https://github.com/daweilv/treejs
  */
 (function webpackUniversalModuleDefinition(root, factory) {
