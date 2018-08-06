@@ -1,12 +1,13 @@
 {
     "name": "@widgetjs/tree",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "description":
         "a lightweight tree widget, compatible with originaljs/react/vue, 9.6kb size for tree.min.js&tree.min.css without gzip.",
     "main": "index.js",
     "scripts": {
         "build": "webpack --progress",
-        "publish": "npm publish"
+        "publish": "npm publish",
+        "save": "git add . && git commit -m 'update' && git push"
     },
     "browserslist": [">1%", "last 4 versions", "Firefox ESR", "not ie < 9"],
     "devDependencies": {
