@@ -16,13 +16,11 @@ A lightweight tree widget, compatible with originaljs / react / vue. 5kb after g
 
 ```js
 import Tree from '@widgetjs/tree';
-import '@widgetjs/tree/dist/tree.min.css';
 ```
 
 ### originaljs usage
 
 ```html
-<link rel="stylesheet" href="${your-asset-src-path}/@widgetjs/tree/dist/tree.min.css">
 <script src="${your-asset-src-path}/@widgetjs/tree/dist/tree.min.js"></script>
 ```
 
