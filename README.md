@@ -1,6 +1,6 @@
 # @widgetjs/tree
 
-a lightweight tree widget, compatible with originaljs / react / vue. 5kb after gzip.
+A lightweight tree widget, compatible with originaljs / react / vue. 5kb after gzip. Zero dependence.
 
 [Online Demo](https://daweilv.github.io/treejs/)
 
