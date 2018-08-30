@@ -1,15 +1,19 @@
 {
   "name": "@widgetjs/tree",
-  "version": "1.7.4",
-  "description":
-    "a lightweight tree widget, compatible with originaljs/react/vue, 9.6kb size for tree.min.js&tree.min.css without gzip.",
+  "version": "1.7.5",
+  "description": "a lightweight tree widget, compatible with originaljs/react/vue, 9.6kb size for tree.min.js&tree.min.css without gzip.",
   "main": "index.js",
   "scripts": {
     "build": "webpack --progress",
     "publish": "npm publish",
     "save": "git add . && git commit -m 'update' && git push"
   },
-  "browserslist": [">1%", "last 4 versions", "Firefox ESR", "not ie < 9"],
+  "browserslist": [
+    ">1%",
+    "last 4 versions",
+    "Firefox ESR",
+    "not ie < 9"
+  ],
   "devDependencies": {
     "@babel/core": "7.0.0-beta.46",
     "@babel/preset-env": "7.0.0-beta.46",
@@ -46,7 +50,13 @@
     "type": "git",
     "url": "git+https://github.com/daweilv/treejs.git"
   },
-  "keywords": ["js", "tree", "treejs", "tree.js", "widget"],
+  "keywords": [
+    "js",
+    "tree",
+    "treejs",
+    "tree.js",
+    "widget"
+  ],
   "author": "daweilv",
   "license": "MIT",
   "bugs": {
