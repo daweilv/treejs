@@ -10,6 +10,7 @@ export default function Tree(container, options) {
         loaded: null,
         url: null,
         method: 'GET',
+        closeDepth: null,
     };
     this.treeNodes = [];
     this.nodesById = {};
@@ -124,22 +125,25 @@ Tree.prototype.load = function(callback) {
 
 Tree.prototype.render = function(treeNodes) {
     let treeEle = Tree.createRootEle();
-    treeEle.appendChild(this.buildTree(treeNodes));
+    treeEle.appendChild(this.buildTree(treeNodes, 0));
     this.bindEvent(treeEle);
     let ele = document.querySelector(this.container);
     empty(ele);
     ele.appendChild(treeEle);
 };
 
-Tree.prototype.buildTree = function(nodes) {
+Tree.prototype.buildTree = function(nodes, depth) {
     let rootUlEle = Tree.createUlEle();
     if (nodes && nodes.length) {
         nodes.forEach(node => {
-            let liEle = Tree.createLiEle(node);
+            let liEle = Tree.createLiEle(
+                node,
+                depth === this.options.closeDepth - 1
+            );
             this.liElementsById[node.id] = liEle;
             let ulEle = null;
             if (node.children && node.children.length) {
-                ulEle = this.buildTree(node.children);
+                ulEle = this.buildTree(node.children, depth + 1);
             }
             ulEle && liEle.appendChild(ulEle);
             rootUlEle.appendChild(liEle);
@@ -313,16 +317,15 @@ Tree.prototype.markWillUpdateNode = function(node) {
 Tree.prototype.onSwitcherClick = function(target) {
     let liEle = target.parentNode;
     let subUlEle = liEle.lastChild;
+    let height = subUlEle.scrollHeight;
     if (liEle.classList.contains('treejs-node__close')) {
-        liEle.classList.remove('treejs-node__close');
-        subUlEle.style.height = 'auto';
-    } else {
-        let height = getComputedStyle(subUlEle).height;
-        subUlEle.style.height = height;
-        setTimeout(() => {
-            subUlEle.style.height = '0px';
+        animation(subUlEle, 'height', '0', height + 'px', () => {
+            liEle.classList.remove('treejs-node__close');
         });
-        liEle.classList.add('treejs-node__close');
+    } else {
+        animation(subUlEle, 'height', height + 'px', '0', () => {
+            liEle.classList.add('treejs-node__close');
+        });
     }
 };
 
@@ -436,9 +439,10 @@ Tree.createUlEle = function() {
     return ul;
 };
 
-Tree.createLiEle = function(node) {
+Tree.createLiEle = function(node, closed) {
     let li = document.createElement('li');
     li.classList.add('treejs-node');
+    if (closed) li.classList.add('treejs-node__close');
     if (node.children && node.children.length) {
         let switcher = document.createElement('span');
         switcher.classList.add('treejs-switcher');
@@ -474,4 +478,13 @@ function empty(ele) {
     while (ele.firstChild) {
         ele.removeChild(ele.firstChild);
     }
+}
+function animation(ele, property, from, to, callback) {
+    requestAnimationFrame(() => {
+        ele.style[property] = from;
+        requestAnimationFrame(() => {
+            ele.style[property] = to;
+            callback && callback();
+        });
+    });
 }

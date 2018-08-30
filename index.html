@@ -20,6 +20,7 @@
 
     let tree = new Tree('.container', {
         data: [{ id: '-1', text: 'root', children: data }],
+        closeDepth: 2,
         loaded: function () {
             this.values = ['0-0-0', '0-1-1'];
             console.log(this.selectedNodes)

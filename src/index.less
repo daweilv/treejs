@@ -6,11 +6,9 @@
 .treejs {
   box-sizing: border-box;
   font-size: 14px;
-  transition: all 0.3s;
 
   *:after,
   *:before {
-    transition: all 0.3s;
     box-sizing: border-box;
   }
 
@@ -22,6 +20,7 @@
     list-style: none;
     padding-left: 20px;
     overflow: hidden;
+    transition: height 150ms ease-out, opacity 150ms ease-out;
   }
 
   .treejs-node {
@@ -40,6 +39,7 @@
     height: 20px;
     cursor: pointer;
     position: relative;
+    transition: transform 150ms ease-out;
     &:before {
       position: absolute;
       top: 8px;
@@ -53,6 +53,10 @@
   .treejs-node__close > .treejs-switcher {
     transform: rotate(-90deg);
   }
+  .treejs-node__close > .treejs-nodes {
+    height: 0;
+    opacity: 0;
+  }
 
   .treejs-checkbox {
     display: inline-block;
@@ -61,7 +65,9 @@
     height: 20px;
     cursor: pointer;
     position: relative;
+
     &:before {
+      transition: all 0.3s;
       cursor: pointer;
       position: absolute;
       top: 2px;

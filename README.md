@@ -35,7 +35,9 @@ import Tree from '@widgetjs/tree';
 let treeData = [{"id":"0","text":"node-0","children":[{"id":"0-0","text":"node-0-0","children":[{"id":"0-0-0","text":"node-0-0-0"},{"id":"0-0-1","text":"node-0-0-1"},{"id":"0-0-2","text":"node-0-0-2"}]},{"id":"0-1","text":"node-0-1"}]},{"id":"1","text":"node-1","children":[{"id":"1-0","text":"node-1-0"},{"id":"1-1","text":"node-1-1"}]}];
 
 new Tree('#container', {
-  data: treeData
+  data: treeData,
+  // only expand level 1 node
+  closeDepth: 1
 });
 
 new Tree('#container', {
