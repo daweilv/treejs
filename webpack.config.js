@@ -2,6 +2,8 @@ const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+    .BundleAnalyzerPlugin;
 
 module.exports = {
     mode: 'none',
@@ -77,5 +79,6 @@ module.exports = {
         new webpack.BannerPlugin(
             'treejs\n@version 1.8.0\n@see https://github.com/daweilv/treejs'
         ),
+        new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
     ],
 };
