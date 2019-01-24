@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-// const CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -76,7 +75,7 @@ module.exports = {
             assetNameRegExp: /\.min\.css$/,
         }),
         new webpack.BannerPlugin(
-            'treejs\n@version 1.7.6\n@see https://github.com/daweilv/treejs'
+            'treejs\n@version 1.8.0\n@see https://github.com/daweilv/treejs'
         ),
     ],
 };

@@ -117,6 +117,48 @@ __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function uniq(arr) {
+  var map = {};
+  return arr.reduce(function (acc, item) {
+    if (!map[item]) {
+      map[item] = true;
+      acc.push(item);
+    }
+
+    return acc;
+  }, []);
+}
+
+function empty(ele) {
+  while (ele.firstChild) {
+    ele.removeChild(ele.firstChild);
+  }
+}
+
+function animation(duration, callback) {
+  requestAnimationFrame(function () {
+    callback.enter();
+    requestAnimationFrame(function () {
+      callback.active();
+      setTimeout(function () {
+        callback.leave();
+      }, duration);
+    });
+  });
+}
+
 function Tree(container, options) {
   var _this = this;
 
@@ -134,7 +176,7 @@ function Tree(container, options) {
   this.nodesById = {};
   this.leafNodesById = {};
   this.liElementsById = {};
-  this._willUpdateNodesById = {};
+  this.willUpdateNodesById = {};
   this.container = container;
   this.options = Object.assign(defaultOptions, options);
   Object.defineProperties(this, {
@@ -143,7 +185,7 @@ function Tree(container, options) {
         return this.getValues();
       },
       set: function set(values) {
-        return this.setValues(arrayDistinct(values));
+        return this.setValues(uniq(values));
       }
     },
     disables: {
@@ -151,7 +193,7 @@ function Tree(container, options) {
         return this.getDisables();
       },
       set: function set(values) {
-        return this.setDisables(arrayDistinct(values));
+        return this.setDisables(uniq(values));
       }
     },
     selectedNodes: {
@@ -284,7 +326,7 @@ Tree.prototype.bindEvent = function (ele) {
   ele.addEventListener('click', function (e) {
     var target = e.target;
 
-    if (target.nodeName === 'SPAN' && target.classList.contains('treejs-checkbox')) {
+    if (target.nodeName === 'SPAN' && (target.classList.contains('treejs-checkbox') || target.classList.contains('treejs-label'))) {
       _this3.onItemClick(target.parentNode.nodeId);
     } else if (target.nodeName === 'LI' && target.classList.contains('treejs-node')) {
       _this3.onItemClick(target.nodeId);
@@ -297,12 +339,14 @@ Tree.prototype.bindEvent = function (ele) {
 Tree.prototype.onItemClick = function (id) {
   console.time('onItemClick');
   var node = this.nodesById[id];
+  var onChange = this.options.onChange;
 
   if (!node.disabled) {
     this.setValue(id);
     this.updateLiElements();
   }
 
+  onChange && onChange.call(this);
   console.timeEnd('onItemClick');
 };
 
@@ -339,6 +383,8 @@ Tree.prototype.setValues = function (values) {
     _this4.setValue(value);
   });
   this.updateLiElements();
+  var onChange = this.options.onChange;
+  onChange && onChange.call(this);
 };
 
 Tree.prototype.setDisable = function (value) {
@@ -379,79 +425,96 @@ Tree.prototype.setDisables = function (values) {
 };
 
 Tree.prototype.emptyNodesCheckStatus = function () {
-  var willUpdateNodesById = this._willUpdateNodesById = this.getSelectedNodesById();
-
-  for (var id in willUpdateNodesById) {
-    if (willUpdateNodesById.hasOwnProperty(id) && !willUpdateNodesById.disabled) {
-      willUpdateNodesById[id].status = 0;
-    }
-  }
+  this.willUpdateNodesById = this.getSelectedNodesById();
+  Object.values(this.willUpdateNodesById).forEach(function (node) {
+    if (!node.disabled) node.status = 0;
+  });
 };
 
 Tree.prototype.emptyNodesDisable = function () {
-  var willUpdateNodesById = this._willUpdateNodesById = this.getDisabledNodesById();
-
-  for (var id in willUpdateNodesById) {
-    if (willUpdateNodesById.hasOwnProperty(id)) {
-      willUpdateNodesById[id].disabled = false;
-    }
-  }
+  this.willUpdateNodesById = this.getDisabledNodesById();
+  Object.values(this.willUpdateNodesById).forEach(function (node) {
+    node.disabled = false;
+  });
 };
 
 Tree.prototype.getSelectedNodesById = function () {
-  var obj = {};
-  var nodesById = this.nodesById;
+  return Object.entries(this.nodesById).reduce(function (acc, _ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        id = _ref2[0],
+        node = _ref2[1];
 
-  for (var id in nodesById) {
-    if (nodesById.hasOwnProperty(id) && (nodesById[id].status === 1 || nodesById[id].status === 2)) {
-      obj[id] = nodesById[id];
+    if (node.status === 1 || node.status === 2) {
+      acc[id] = node;
     }
-  }
 
-  return obj;
+    return acc;
+  }, {});
 };
 
 Tree.prototype.getDisabledNodesById = function () {
-  var obj = {};
-  var nodesById = this.nodesById;
+  return Object.entries(this.nodesById).reduce(function (acc, _ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+        id = _ref4[0],
+        node = _ref4[1];
 
-  for (var id in nodesById) {
-    if (nodesById.hasOwnProperty(id) && nodesById[id].disabled) {
-      obj[id] = nodesById[id];
+    if (node.disabled) {
+      acc[id] = node;
     }
-  }
 
-  return obj;
+    return acc;
+  }, {});
 };
 
 Tree.prototype.updateLiElements = function () {
-  var willUpdateNodesById = this._willUpdateNodesById;
+  var _this6 = this;
 
-  for (var id in willUpdateNodesById) {
-    if (willUpdateNodesById.hasOwnProperty(id)) {
-      this.updateLiElement(willUpdateNodesById[id]);
-    }
-  }
-
-  this._willUpdateNodesById = {};
+  Object.values(this.willUpdateNodesById).forEach(function (node) {
+    _this6.updateLiElement(node);
+  });
+  this.willUpdateNodesById = {};
 };
 
 Tree.prototype.markWillUpdateNode = function (node) {
-  this._willUpdateNodesById[node.id] = node;
+  this.willUpdateNodesById[node.id] = node;
 };
 
 Tree.prototype.onSwitcherClick = function (target) {
   var liEle = target.parentNode;
-  var subUlEle = liEle.lastChild;
-  var height = subUlEle.scrollHeight;
+  var ele = liEle.lastChild;
+  var height = ele.scrollHeight;
 
   if (liEle.classList.contains('treejs-node__close')) {
-    animation(subUlEle, 'height', '0', height + 'px', function () {
-      liEle.classList.remove('treejs-node__close');
+    animation(150, {
+      enter: function enter() {
+        ele.style.height = 0;
+        ele.style.opacity = 0;
+      },
+      active: function active() {
+        ele.style.height = "".concat(height, "px");
+        ele.style.opacity = 1;
+      },
+      leave: function leave() {
+        ele.style.height = '';
+        ele.style.opacity = '';
+        liEle.classList.remove('treejs-node__close');
+      }
     });
   } else {
-    animation(subUlEle, 'height', height + 'px', '0', function () {
-      liEle.classList.add('treejs-node__close');
+    animation(150, {
+      enter: function enter() {
+        ele.style.height = "".concat(height, "px");
+        ele.style.opacity = 1;
+      },
+      active: function active() {
+        ele.style.height = 0;
+        ele.style.opacity = 0;
+      },
+      leave: function leave() {
+        ele.style.height = '';
+        ele.style.opacity = '';
+        liEle.classList.add('treejs-node__close');
+      }
     });
   }
 };
@@ -462,10 +525,10 @@ Tree.prototype.walkUp = function (node, changeState) {
   if (parent) {
     if (changeState === 'status') {
       var pStatus = null;
-      var statusCount = 0;
-      parent.children.forEach(function (node) {
-        if (!isNaN(node.status)) statusCount += node.status;
-      });
+      var statusCount = parent.children.reduce(function (acc, child) {
+        if (!isNaN(child.status)) return acc + child.status;
+        return acc;
+      }, 0);
 
       if (statusCount) {
         pStatus = statusCount === parent.children.length * 2 ? 2 : 1;
@@ -476,10 +539,9 @@ Tree.prototype.walkUp = function (node, changeState) {
       if (parent.status === pStatus) return;
       parent.status = pStatus;
     } else {
-      var pDisabled = true;
-      parent.children.forEach(function (node) {
-        pDisabled = pDisabled && node.disabled;
-      });
+      var pDisabled = parent.children.reduce(function (acc, child) {
+        return acc && child.disabled;
+      }, true);
       if (parent.disabled === pDisabled) return;
       parent.disabled = pDisabled;
     }
@@ -490,16 +552,16 @@ Tree.prototype.walkUp = function (node, changeState) {
 };
 
 Tree.prototype.walkDown = function (node, changeState) {
-  var _this6 = this;
+  var _this7 = this;
 
   if (node.children && node.children.length) {
     node.children.forEach(function (child) {
       if (changeState === 'status' && child.disabled) return;
       child[changeState] = node[changeState];
 
-      _this6.markWillUpdateNode(child);
+      _this7.markWillUpdateNode(child);
 
-      _this6.walkDown(child, changeState);
+      _this7.walkDown(child, changeState);
     });
   }
 };
@@ -594,43 +656,14 @@ Tree.createLiEle = function (node, closed) {
   var checkbox = document.createElement('span');
   checkbox.classList.add('treejs-checkbox');
   li.appendChild(checkbox);
+  var label = document.createElement('span');
+  label.classList.add('treejs-label');
   var text = document.createTextNode(node.text);
-  li.appendChild(text);
+  label.appendChild(text);
+  li.appendChild(label);
   li.nodeId = node.id;
   return li;
 };
-
-function deepClone(obj) {
-  return JSON.parse(JSON.stringify(obj));
-}
-
-function arrayDistinct(arr) {
-  var obj = {};
-  var newArr = [];
-  arr.forEach(function (item) {
-    if (!obj[item]) {
-      obj[item] = true;
-      newArr.push(item);
-    }
-  });
-  return newArr;
-}
-
-function empty(ele) {
-  while (ele.firstChild) {
-    ele.removeChild(ele.firstChild);
-  }
-}
-
-function animation(ele, property, from, to, callback) {
-  requestAnimationFrame(function () {
-    ele.style[property] = from;
-    requestAnimationFrame(function () {
-      ele.style[property] = to;
-      callback && callback();
-    });
-  });
-}
 
 /***/ }),
 /* 1 */
@@ -644,6 +677,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = _default;
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _default(_options) {
   var defaultOptions = {
     method: 'GET',
@@ -654,40 +695,39 @@ function _default(_options) {
     'Content-Type': 'application/json; charset=utf-8'
   };
   var options = Object.assign(defaultOptions, _options);
-  var xhq = new XMLHttpRequest();
-  var params = [];
+  var xhr = new XMLHttpRequest();
+  var postData = Object.entries(options.data).reduce(function (acc, _ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        key = _ref2[0],
+        value = _ref2[1];
 
-  for (var key in options.data) {
-    if (options.data.hasOwnProperty(key)) {
-      params.push(key + '=' + options.data[key]);
-    }
-  }
-
-  var postData = params.join('&');
+    acc.push("".concat(key, "=").concat(value));
+    return acc;
+  }, []).join('&');
 
   if (options.method.toUpperCase() === 'POST') {
-    xhq.open(options.method, options.url, options.async);
-    xhq.setRequestHeader('Content-Type', options['Content-Type']);
-    xhq.send(postData);
+    xhr.open(options.method, options.url, options.async);
+    xhr.setRequestHeader('Content-Type', options['Content-Type']);
+    xhr.send(postData);
   } else if (options.method.toUpperCase() === 'GET') {
     var url = options.url;
 
     if (postData) {
       if (url.indexOf('?') !== -1) {
-        url += '&' + postData;
+        url += "&".concat(postData);
       } else {
-        url += '?' + postData;
+        url += "&".concat(postData);
       }
     }
 
-    xhq.open(options.method, url, options.async);
-    xhq.setRequestHeader('Content-Type', options['Content-Type']);
-    xhq.send(null);
+    xhr.open(options.method, url, options.async);
+    xhr.setRequestHeader('Content-Type', options['Content-Type']);
+    xhr.send(null);
   }
 
-  xhq.onreadystatechange = function () {
-    if (xhq.readyState === 4 && xhq.status === 200) {
-      var res = xhq.responseText;
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      var res = xhr.responseText;
 
       if (options['Content-Type'] === defaultOptions['Content-Type']) {
         res = JSON.parse(res);
@@ -695,7 +735,7 @@ function _default(_options) {
 
       options.success && options.success(res);
     } else {
-      options.failed && options.failed(xhq.status);
+      options.failed && options.failed(xhr.status);
     }
   };
 }
@@ -734,7 +774,7 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, ".treejs {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 14px;\n}\n.treejs *:after,\n.treejs *:before {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n.treejs > .treejs-node {\n  padding-left: 0;\n}\n.treejs .treejs-nodes {\n  list-style: none;\n  padding-left: 20px;\n  overflow: hidden;\n  -webkit-transition: height 150ms ease-out, opacity 150ms ease-out;\n  -o-transition: height 150ms ease-out, opacity 150ms ease-out;\n  transition: height 150ms ease-out, opacity 150ms ease-out;\n}\n.treejs .treejs-node {\n  cursor: pointer;\n  overflow: hidden;\n}\n.treejs .treejs-node.treejs-placeholder {\n  padding-left: 20px;\n}\n.treejs .treejs-switcher {\n  display: inline-block;\n  vertical-align: middle;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  position: relative;\n  -webkit-transition: -webkit-transform 150ms ease-out;\n  transition: -webkit-transform 150ms ease-out;\n  -o-transition: transform 150ms ease-out;\n  transition: transform 150ms ease-out;\n  transition: transform 150ms ease-out, -webkit-transform 150ms ease-out;\n}\n.treejs .treejs-switcher:before {\n  position: absolute;\n  top: 8px;\n  left: 6px;\n  display: block;\n  content: ' ';\n  border: 4px solid transparent;\n  border-top: 4px solid rgba(0, 0, 0, 0.65);\n}\n.treejs .treejs-node__close > .treejs-switcher {\n  -webkit-transform: rotate(-90deg);\n      -ms-transform: rotate(-90deg);\n          transform: rotate(-90deg);\n}\n.treejs .treejs-node__close > .treejs-nodes {\n  height: 0;\n  opacity: 0;\n}\n.treejs .treejs-checkbox {\n  display: inline-block;\n  vertical-align: middle;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  position: relative;\n}\n.treejs .treejs-checkbox:before {\n  -webkit-transition: all 0.3s;\n  -o-transition: all 0.3s;\n  transition: all 0.3s;\n  cursor: pointer;\n  position: absolute;\n  top: 2px;\n  content: ' ';\n  display: block;\n  width: 16px;\n  height: 16px;\n  border: 1px solid #d9d9d9;\n  border-radius: 2px;\n}\n.treejs .treejs-checkbox:hover:before {\n  -webkit-box-shadow: 0 0 2px 1px #1890ff;\n          box-shadow: 0 0 2px 1px #1890ff;\n}\n.treejs .treejs-node__checked > .treejs-checkbox:before {\n  background-color: #1890ff;\n  border-color: #1890ff;\n}\n.treejs .treejs-node__checked > .treejs-checkbox:after {\n  position: absolute;\n  content: ' ';\n  display: block;\n  top: 4px;\n  left: 5px;\n  width: 5px;\n  height: 9px;\n  border: 2px solid #fff;\n  border-top: none;\n  border-left: none;\n  -webkit-transform: rotate(45deg);\n      -ms-transform: rotate(45deg);\n          transform: rotate(45deg);\n}\n.treejs .treejs-node__halfchecked > .treejs-checkbox:before {\n  background-color: #1890ff;\n  border-color: #1890ff;\n}\n.treejs .treejs-node__halfchecked > .treejs-checkbox:after {\n  position: absolute;\n  content: ' ';\n  display: block;\n  top: 9px;\n  left: 3px;\n  width: 10px;\n  height: 2px;\n  background-color: #fff;\n}\n.treejs .treejs-node__disabled {\n  cursor: not-allowed;\n  color: rgba(0, 0, 0, 0.25);\n}\n.treejs .treejs-node__disabled .treejs-checkbox {\n  cursor: not-allowed;\n}\n.treejs .treejs-node__disabled .treejs-checkbox:before {\n  cursor: not-allowed;\n  border-color: #d9d9d9 !important;\n  background-color: #f5f5f5 !important;\n}\n.treejs .treejs-node__disabled .treejs-checkbox:hover:before {\n  -webkit-box-shadow: none !important;\n          box-shadow: none !important;\n}\n.treejs .treejs-node__disabled .treejs-node__checked > .treejs-checkbox:after {\n  border-color: #d9d9d9;\n}\n.treejs .treejs-node__disabled .treejs-node__halfchecked > .treejs-checkbox:after {\n  background-color: #d9d9d9;\n}\n.treejs .treejs-node__disabled.treejs-node__checked > .treejs-checkbox:after {\n  border-color: #d9d9d9;\n}\n.treejs .treejs-node__disabled.treejs-node__halfchecked > .treejs-checkbox:after {\n  background-color: #d9d9d9;\n}\n", ""]);
+exports.push([module.i, ".treejs {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 14px;\n}\n.treejs *:after,\n.treejs *:before {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n.treejs > .treejs-node {\n  padding-left: 0;\n}\n.treejs .treejs-nodes {\n  list-style: none;\n  padding-left: 20px;\n  overflow: hidden;\n  -webkit-transition: height 150ms ease-out, opacity 150ms ease-out;\n  -o-transition: height 150ms ease-out, opacity 150ms ease-out;\n  transition: height 150ms ease-out, opacity 150ms ease-out;\n}\n.treejs .treejs-node {\n  cursor: pointer;\n  overflow: hidden;\n}\n.treejs .treejs-node.treejs-placeholder {\n  padding-left: 20px;\n}\n.treejs .treejs-switcher {\n  display: inline-block;\n  vertical-align: middle;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  position: relative;\n  -webkit-transition: -webkit-transform 150ms ease-out;\n  transition: -webkit-transform 150ms ease-out;\n  -o-transition: transform 150ms ease-out;\n  transition: transform 150ms ease-out;\n  transition: transform 150ms ease-out, -webkit-transform 150ms ease-out;\n}\n.treejs .treejs-switcher:before {\n  position: absolute;\n  top: 8px;\n  left: 6px;\n  display: block;\n  content: ' ';\n  border: 4px solid transparent;\n  border-top: 4px solid rgba(0, 0, 0, 0.4);\n  -webkit-transition: border-color 150ms;\n  -o-transition: border-color 150ms;\n  transition: border-color 150ms;\n}\n.treejs .treejs-switcher:hover:before {\n  border-top: 4px solid rgba(0, 0, 0, 0.65);\n}\n.treejs .treejs-node__close > .treejs-switcher {\n  -webkit-transform: rotate(-90deg);\n      -ms-transform: rotate(-90deg);\n          transform: rotate(-90deg);\n}\n.treejs .treejs-node__close > .treejs-nodes {\n  height: 0;\n}\n.treejs .treejs-checkbox {\n  display: inline-block;\n  vertical-align: middle;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  position: relative;\n}\n.treejs .treejs-checkbox:before {\n  -webkit-transition: all 0.3s;\n  -o-transition: all 0.3s;\n  transition: all 0.3s;\n  cursor: pointer;\n  position: absolute;\n  top: 2px;\n  content: ' ';\n  display: block;\n  width: 16px;\n  height: 16px;\n  border: 1px solid #d9d9d9;\n  border-radius: 2px;\n}\n.treejs .treejs-checkbox:hover:before {\n  -webkit-box-shadow: 0 0 2px 1px #1890ff;\n          box-shadow: 0 0 2px 1px #1890ff;\n}\n.treejs .treejs-node__checked > .treejs-checkbox:before {\n  background-color: #1890ff;\n  border-color: #1890ff;\n}\n.treejs .treejs-node__checked > .treejs-checkbox:after {\n  position: absolute;\n  content: ' ';\n  display: block;\n  top: 4px;\n  left: 5px;\n  width: 5px;\n  height: 9px;\n  border: 2px solid #fff;\n  border-top: none;\n  border-left: none;\n  -webkit-transform: rotate(45deg);\n      -ms-transform: rotate(45deg);\n          transform: rotate(45deg);\n}\n.treejs .treejs-node__halfchecked > .treejs-checkbox:before {\n  background-color: #1890ff;\n  border-color: #1890ff;\n}\n.treejs .treejs-node__halfchecked > .treejs-checkbox:after {\n  position: absolute;\n  content: ' ';\n  display: block;\n  top: 9px;\n  left: 3px;\n  width: 10px;\n  height: 2px;\n  background-color: #fff;\n}\n.treejs .treejs-node__disabled {\n  cursor: not-allowed;\n  color: rgba(0, 0, 0, 0.25);\n}\n.treejs .treejs-node__disabled .treejs-checkbox {\n  cursor: not-allowed;\n}\n.treejs .treejs-node__disabled .treejs-checkbox:before {\n  cursor: not-allowed;\n  border-color: #d9d9d9 !important;\n  background-color: #f5f5f5 !important;\n}\n.treejs .treejs-node__disabled .treejs-checkbox:hover:before {\n  -webkit-box-shadow: none !important;\n          box-shadow: none !important;\n}\n.treejs .treejs-node__disabled .treejs-node__checked > .treejs-checkbox:after {\n  border-color: #d9d9d9;\n}\n.treejs .treejs-node__disabled .treejs-node__halfchecked > .treejs-checkbox:after {\n  background-color: #d9d9d9;\n}\n.treejs .treejs-node__disabled.treejs-node__checked > .treejs-checkbox:after {\n  border-color: #d9d9d9;\n}\n.treejs .treejs-node__disabled.treejs-node__halfchecked > .treejs-checkbox:after {\n  background-color: #d9d9d9;\n}\n.treejs .treejs-label {\n  vertical-align: middle;\n}\n", ""]);
 
 // exports
 

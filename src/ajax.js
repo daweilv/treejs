@@ -1,48 +1,48 @@
 export default function(_options) {
-    let defaultOptions = {
-        method: 'GET',
-        url: '',
-        async: true,
-        success: null,
-        failed: null,
-        'Content-Type': 'application/json; charset=utf-8',
-    };
-    let options = Object.assign(defaultOptions, _options);
-    let xhq = new XMLHttpRequest();
-    let params = [];
-    for (let key in options.data) {
-        if (options.data.hasOwnProperty(key)) {
-            params.push(key + '=' + options.data[key]);
-        }
-    }
-    let postData = params.join('&');
+  const defaultOptions = {
+    method: 'GET',
+    url: '',
+    async: true,
+    success: null,
+    failed: null,
+    'Content-Type': 'application/json; charset=utf-8',
+  };
+  const options = Object.assign(defaultOptions, _options);
+  const xhr = new XMLHttpRequest();
 
-    if (options.method.toUpperCase() === 'POST') {
-        xhq.open(options.method, options.url, options.async);
-        xhq.setRequestHeader('Content-Type', options['Content-Type']);
-        xhq.send(postData);
-    } else if (options.method.toUpperCase() === 'GET') {
-        let url = options.url;
-        if (postData) {
-            if (url.indexOf('?') !== -1) {
-                url += '&' + postData;
-            } else {
-                url += '?' + postData;
-            }
-        }
-        xhq.open(options.method, url, options.async);
-        xhq.setRequestHeader('Content-Type', options['Content-Type']);
-        xhq.send(null);
+  const postData = Object.entries(options.data)
+    .reduce((acc, [key, value]) => {
+      acc.push(`${key}=${value}`);
+      return acc;
+    }, [])
+    .join('&');
+
+  if (options.method.toUpperCase() === 'POST') {
+    xhr.open(options.method, options.url, options.async);
+    xhr.setRequestHeader('Content-Type', options['Content-Type']);
+    xhr.send(postData);
+  } else if (options.method.toUpperCase() === 'GET') {
+    let {url} = options;
+    if (postData) {
+      if (url.indexOf('?') !== -1) {
+        url += `&${postData}`;
+      } else {
+        url += `&${postData}`;
+      }
     }
-    xhq.onreadystatechange = function() {
-        if (xhq.readyState === 4 && xhq.status === 200) {
-            let res = xhq.responseText;
-            if (options['Content-Type'] === defaultOptions['Content-Type']) {
-                res = JSON.parse(res);
-            }
-            options.success && options.success(res);
-        } else {
-            options.failed && options.failed(xhq.status);
-        }
-    };
+    xhr.open(options.method, url, options.async);
+    xhr.setRequestHeader('Content-Type', options['Content-Type']);
+    xhr.send(null);
+  }
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      let res = xhr.responseText;
+      if (options['Content-Type'] === defaultOptions['Content-Type']) {
+        res = JSON.parse(res);
+      }
+      options.success && options.success(res);
+    } else {
+      options.failed && options.failed(xhr.status);
+    }
+  };
 }

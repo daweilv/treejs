@@ -42,6 +42,13 @@ new Tree('#container', {
 
 new Tree('#container', {
   data: treeData,
+  onChange: function() {
+      console.log(this.values);
+  }
+});
+
+new Tree('#container', {
+  data: treeData,
   values: ['1', '2', '3']
 });
 
@@ -61,8 +68,9 @@ new Tree('#container', {
 
 new Tree('#container', {
   url: '/api/treeJson',
-  loaded: () => {
-    // to something or setValues() after Tree loaded callback
+  loaded: function() {
+    // do something or set values after Tree loaded callback
+    // this context bind current tree instance
     let treeJson = [];
     this.values = treeJson;
   },

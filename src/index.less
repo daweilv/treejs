@@ -40,6 +40,7 @@
     cursor: pointer;
     position: relative;
     transition: transform 150ms ease-out;
+
     &:before {
       position: absolute;
       top: 8px;
@@ -47,6 +48,10 @@
       display: block;
       content: ' ';
       border: 4px solid transparent;
+      border-top: 4px solid rgba(0, 0, 0, 0.4);
+      transition: border-color 150ms;
+    }
+    &:hover:before {
       border-top: 4px solid rgba(0, 0, 0, 0.65);
     }
   }
@@ -55,7 +60,6 @@
   }
   .treejs-node__close > .treejs-nodes {
     height: 0;
-    opacity: 0;
   }
 
   .treejs-checkbox {
@@ -164,5 +168,9 @@
         background-color: @greyborder;
       }
     }
+  }
+
+  .treejs-label {
+    vertical-align: middle;
   }
 }
