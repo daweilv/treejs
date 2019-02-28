@@ -41,10 +41,10 @@ import Tree from '@widgetjs/tree';
 
 ## Initialize
 
-new Tree(`treeContainer`, `parameters`), returns initialized Tree instance.
+`new Tree(treeContainer, parameters)`, returns initialized Tree instance.
 
-> * `treeContainer` - string - css selector of the tree container(`document.querySelector` inside).
-> * `parameters` - object - options of the tree.
+* `treeContainer` - string - css selector of the tree container(`document.querySelector` inside).
+* `parameters` - object - options of the tree.
 
 For example:
 
@@ -76,21 +76,21 @@ var myTree = new Tree('#container', {
 
 ## Parameters
 
-| Name       | Type     | Description                                                         | Default |
-| ---------- | -------- | ------------------------------------------------------------------- | ------- |
-| url        | string   | a URL to retrieve remote data,or use `data`                         | null    |
-| method     | string   | http method(get/post)                                               | 'GET'   |
-| data       | array    | the json tree data                                                  | null    |
-| values     | array    | ids which you want to check                                         | []      |
-| closeDepth | integer  | expand level                                                        | null    |
-| beforeLoad | function | invoke before the tree load data. Format raw data in this function. | null    |
-| loaded     | function | invoke after the tree load data                                     | null    |
-| onChange   | function | invoke when the node status change                                  | null    |
+| Name       | Type     | Description                                                         |
+| ---------- | -------- | ------------------------------------------------------------------- |
+| url        | string   | a URL to retrieve remote data,or use `data`                         |
+| method     | string   | http method(GET/POST), default 'GET'                                |
+| data       | array    | the json tree data                                                  |
+| values     | array    | ids which you want to check                                         |
+| closeDepth | integer  | expand level                                                        |
+| beforeLoad | function | invoke before the tree load data. Format raw data in this function. |
+| loaded     | function | invoke after the tree load data                                     |
+| onChange   | function | invoke when the node status change                                  |
 
 Example
 
 ```js
-var tree = new Tree('#container', {
+var myTree = new Tree('#container', {
   url: '/api/treeJson',
   method: 'GET',
 
@@ -128,38 +128,38 @@ var tree = new Tree('#container', {
 | disables      | array | get/set   | get disabled values, or set disable nodes. |
 | disabledNodes | array | get       | disabled nodes data with attributes.       |
 
-### tree.values
+### myTree.values
 
 ```js
 // get
-var values = tree.values;
+var values = myTree.values;
 
 // set
 tree.values = ['0-1'];
 ```
 
-### tree.selectedNodes
+### myTree.selectedNodes
 
 ```js
 // get
-var selectedNodes = tree.selectedNodes;
+var selectedNodes = myTree.selectedNodes;
 ```
 
-### tree.disables
+### myTree.disables
 
 ```js
 // get
-var disables = tree.disables;
+var disables = myTree.disables;
 
 // set
 tree.disables = ['0-1'];
 ```
 
-### tree.disabledNodes
+### myTree.disabledNodes
 
 ```js
 // get
-var disabledNodes = tree.disabledNodes;
+var disabledNodes = myTree.disabledNodes;
 ```
 
 ## Events
@@ -197,11 +197,11 @@ var treeData = [
   },
 ];
 
-var tree = new Tree('#container', {
+var myTree = new Tree('#container', {
   data: treeData,
 });
 
-var tree = new Tree('#container', {
+var myTree = new Tree('#container', {
   url: '/api/treeWithCheckedStatusJson',
 });
 ```
