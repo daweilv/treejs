@@ -21,7 +21,9 @@ A lightweight tree widget.
 
 ## Install
 
-`npm i -S @widgetjs/tree`
+```bash
+npm i -S @widgetjs/tree
+```
 
 ## Usage
 
@@ -34,62 +36,25 @@ import Tree from '@widgetjs/tree';
 ### VanillaJS usage
 
 ```html
-<script src="${your-asset-src-path}/@widgetjs/tree/dist/tree.min.js"></script>
+<script src="path/to/tree.min.js"></script>
 ```
 
-## Properties & Methods
+## Initialize
 
-### tree.values
+new Tree(`treeContainer`, `parameters`), returns initialized Tree instance.
 
-get or set the values array of selected leaves.
+> * `treeContainer` - string - css selector of the tree container(`document.querySelector` inside).
+> * `parameters` - object - options of the tree.
+
+For example:
 
 ```js
-// get
-const values = tree.values;
-// todo: show case
-
-// set
-tree.values = ['0-1'];
+var myTree = new Tree('#container', {
+  url: '/api/treeJson',
+});
 ```
 
-### tree.selectedNodes
-
-get the selectedNodes data (with attributes).
-
-```js
-// get
-let selectedNodes = tree.selectedNodes;
-// todo: show case
-```
-
-### tree.disables
-
-get the values array of disabled leaves, or disable the nodes. The disabled nodes will be readonly and unchangeable
-
-```js
-// get
-let disables = tree.disables;
-// todo: show case
-
-// set
-tree.disables = ['0-1'];
-```
-
-### tree.disabledNodes
-
-get all disabled nodes with attributes
-
-```js
-// get
-let disabledNodes = tree.disabledNodes;
-// todo: show case
-```
-
-### tree.beforeLoad
-### tree.loaded
-### tree.onChange
-
-## Example
+## Basic Node Format
 
 ```json
 {
@@ -101,8 +66,114 @@ let disabledNodes = tree.disabledNodes;
 }
 ```
 
+| Name       | Type    | Description                         | Required |
+| ---------- | ------- | ----------------------------------- | -------- |
+| id         | any     | unique id                           | Required |
+| text       | string  | tree node label                     | Required |
+| attributes | object  | custom attributes of the node       | Optional |
+| children   | array   | children of current node            | Optional |
+| check      | boolean | whether the node is selected or not | Optional |
+
+## Parameters
+
+| Name       | Type     | Description                                                         | Default |
+| ---------- | -------- | ------------------------------------------------------------------- | ------- |
+| url        | string   | a URL to retrieve remote data,or use `data`                         | null    |
+| method     | string   | http method(get/post)                                               | 'GET'   |
+| data       | array    | the json tree data                                                  | null    |
+| values     | array    | ids which you want to check                                         | []      |
+| closeDepth | integer  | expand level                                                        | null    |
+| beforeLoad | function | invoke before the tree load data. Format raw data in this function. | null    |
+| loaded     | function | invoke after the tree load data                                     | null    |
+| onChange   | function | invoke when the node status change                                  | null    |
+
+Example
+
 ```js
-let treeData = [
+var tree = new Tree('#container', {
+  url: '/api/treeJson',
+  method: 'GET',
+
+  values: ['1', '2', '3'],
+
+  // only expand level 1 node
+  closeDepth: 1,
+
+  beforeLoad: function(rawData) {
+    function formatData() {
+      // do some format
+    }
+    return formatData(rawData);
+  },
+
+  loaded: function() {
+    // do something or set values after Tree loaded callback
+    // do not use arrow function `()=>` , if you use `this`, use function instead.
+    // this context bind current tree instance
+    this.values = ['0-1'];
+  },
+
+  onChange: function() {
+    console.log(this.values);
+  },
+});
+```
+
+## Properties
+
+| Property      | Type  | Operation | Description                                |
+| ------------- | ----- | --------- | ------------------------------------------ |
+| values        | array | get/set   | selected values.                           |
+| selectedNodes | array | get       | selected nodes data with attributes.       |
+| disables      | array | get/set   | get disabled values, or set disable nodes. |
+| disabledNodes | array | get       | disabled nodes data with attributes.       |
+
+### tree.values
+
+```js
+// get
+var values = tree.values;
+
+// set
+tree.values = ['0-1'];
+```
+
+### tree.selectedNodes
+
+```js
+// get
+var selectedNodes = tree.selectedNodes;
+```
+
+### tree.disables
+
+```js
+// get
+var disables = tree.disables;
+
+// set
+tree.disables = ['0-1'];
+```
+
+### tree.disabledNodes
+
+```js
+// get
+var disabledNodes = tree.disabledNodes;
+```
+
+## Events
+
+| Event      | Parameters   | Description                        |
+| ---------- | ------------ | ---------------------------------- |
+| beforeLoad | current data | invoke before the tree load data   |
+| loaded     | null         | invoke after the tree load data    |
+| onChange   | null         | invoke when the node status change |
+
+## Examples
+
+```js
+var treeData = [
   {
     id: '0',
     text: 'node-0',
@@ -126,54 +197,16 @@ let treeData = [
   },
 ];
 
-new Tree('#container', {
+var tree = new Tree('#container', {
   data: treeData,
-  // only expand level 1 node
-  closeDepth: 1,
 });
 
-new Tree('#container', {
-  data: treeData,
-  onChange: function() {
-    console.log(this.values);
-  },
-});
-
-new Tree('#container', {
-  data: treeData,
-  values: ['1', '2', '3'],
-});
-
-new Tree('#container', {
-  url: '/api/treeJson',
-  values: ['1', '2', '3'],
-});
-
-new Tree('#container', {
-  url: '/api/rawData',
-  beforeLoad: rawdata => {
-    let formatedData = rawdata; // do some format
-    return formatedData;
-  },
-  values: ['1', '2', '3'],
-});
-
-new Tree('#container', {
-  url: '/api/treeJson',
-  loaded: function() {
-    // do something or set values after Tree loaded callback
-    // this context bind current tree instance
-    let treeJson = [];
-    this.values = treeJson;
-  },
-});
-
-new Tree('#container', {
+var tree = new Tree('#container', {
   url: '/api/treeWithCheckedStatusJson',
 });
-
-let tree = new Tree({
-  data: treeData,
-  values: ['1', '2', '3'],
-});
 ```
+
+---
+
+Like @widgetjs/tree? just 🌟 star the project!
+[Create issues](https://github.com/daweilv/treejs/issues) if you find bug.
