@@ -57,7 +57,9 @@
     "tree",
     "treejs",
     "tree.js",
-    "widget"
+    "widget",
+    "react-tree",
+    "vue-tree"
   ],
   "author": "daweilv",
   "license": "MIT",
