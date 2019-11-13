@@ -5,13 +5,14 @@
 [![npm downloads](https://img.shields.io/npm/dm/@widgetjs/tree.svg?style=flat-square)](https://www.npmjs.com/package/@widgetjs/tree)
 [![gzip size](https://flat.badgen.net/bundlephobia/minzip/@widgetjs/tree)](https://bundlephobia.com/result?p=@widgetjs/tree)
 
-A lightweight tree widget.
+A lightweight flexible tree widget.
 
 ## Features
 
-* Compatible with VanillaJS / React / Vue
-* Tiny size after gzip
-* Zero dependence
+* 🚀 Compatible with VanillaJS / React / Vue
+* ✂️ Tiny size after gzip
+* 🎊 Zero dependence
+* 🎉 Events supported
 
 ## Demo
 
@@ -46,14 +47,6 @@ import Tree from '@widgetjs/tree';
 * `treeContainer` - string - css selector of the tree container(`document.querySelector` inside).
 * `parameters` - object - options of the tree.
 
-For example:
-
-```js
-var myTree = new Tree('#container', {
-  url: '/api/treeJson',
-});
-```
-
 ## Basic Node Format
 
 ```json
@@ -74,6 +67,14 @@ var myTree = new Tree('#container', {
 | children   | array   | children of current node            | Optional |
 | check      | boolean | whether the node is selected or not | Optional |
 
+### Example
+
+```js
+const myTree = new Tree('#container', {
+  url: '/api/treeJson',
+});
+```
+
 ## Parameters
 
 | Name       | Type     | Description                                                         |
@@ -87,10 +88,40 @@ var myTree = new Tree('#container', {
 | loaded     | function | invoke after the tree load data                                     |
 | onChange   | function | invoke when the node status change                                  |
 
-Example
+### Example
 
 ```js
-var myTree = new Tree('#container', {
+const treeData = [
+  {
+    id: '0',
+    text: 'node-0',
+    children: [
+      {
+        id: '0-0',
+        text: 'node-0-0',
+        children: [
+          {id: '0-0-0', text: 'node-0-0-0'},
+          {id: '0-0-1', text: 'node-0-0-1'},
+          {id: '0-0-2', text: 'node-0-0-2'},
+        ],
+      },
+      {id: '0-1', text: 'node-0-1'},
+    ],
+  },
+  {
+    id: '1',
+    text: 'node-1',
+    children: [{id: '1-0', text: 'node-1-0'}, {id: '1-1', text: 'node-1-1'}],
+  },
+];
+
+const myTree = new Tree('#container', {
+  data: treeData,
+});
+```
+
+```js
+const myTree = new Tree('#container', {
   url: '/api/treeJson',
   method: 'GET',
 
@@ -132,7 +163,7 @@ var myTree = new Tree('#container', {
 
 ```js
 // get
-var values = myTree.values;
+const values = myTree.values;
 
 // set
 tree.values = ['0-1'];
@@ -142,14 +173,14 @@ tree.values = ['0-1'];
 
 ```js
 // get
-var selectedNodes = myTree.selectedNodes;
+const selectedNodes = myTree.selectedNodes;
 ```
 
 ### myTree.disables
 
 ```js
 // get
-var disables = myTree.disables;
+const disables = myTree.disables;
 
 // set
 tree.disables = ['0-1'];
@@ -159,7 +190,7 @@ tree.disables = ['0-1'];
 
 ```js
 // get
-var disabledNodes = myTree.disabledNodes;
+const disabledNodes = myTree.disabledNodes;
 ```
 
 ## Events
@@ -170,41 +201,9 @@ var disabledNodes = myTree.disabledNodes;
 | loaded     | null         | invoke after the tree load data    |
 | onChange   | null         | invoke when the node status change |
 
-## Examples
+## License
 
-```js
-var treeData = [
-  {
-    id: '0',
-    text: 'node-0',
-    children: [
-      {
-        id: '0-0',
-        text: 'node-0-0',
-        children: [
-          {id: '0-0-0', text: 'node-0-0-0'},
-          {id: '0-0-1', text: 'node-0-0-1'},
-          {id: '0-0-2', text: 'node-0-0-2'},
-        ],
-      },
-      {id: '0-1', text: 'node-0-1'},
-    ],
-  },
-  {
-    id: '1',
-    text: 'node-1',
-    children: [{id: '1-0', text: 'node-1-0'}, {id: '1-1', text: 'node-1-1'}],
-  },
-];
-
-var myTree = new Tree('#container', {
-  data: treeData,
-});
-
-var myTree = new Tree('#container', {
-  url: '/api/treeWithCheckedStatusJson',
-});
-```
+[MIT](./LICENSE)
 
 ---
 
