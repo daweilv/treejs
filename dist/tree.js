@@ -170,7 +170,15 @@ function Tree(container, options) {
     loaded: null,
     url: null,
     method: 'GET',
-    closeDepth: null
+    closeDepth: null,
+    rootNode: true,
+    mergeOptionsFromData: true,
+    console: false,
+    labelClass: "",
+    checkboxClass: "",
+    liClass: "",
+    ulClass: "",
+    switcherClass: ""
   };
   this.treeNodes = [];
   this.nodesById = {};
@@ -241,7 +249,9 @@ function Tree(container, options) {
 }
 
 Tree.prototype.init = function (data) {
-  console.time('init');
+  if (this.options.console) {
+    console.time('init');
+  }
 
   var _Tree$parseTreeData = Tree.parseTreeData(data),
       treeNodes = _Tree$parseTreeData.treeNodes,
@@ -258,16 +268,34 @@ Tree.prototype.init = function (data) {
       values = _this$options.values,
       disables = _this$options.disables,
       loaded = _this$options.loaded;
-  if (values && values.length) defaultValues = values;
+
+  if (!this.options.mergeOptionsFromData) {
+    defaultValues = [];
+  }
+
+  if (values && values.length) defaultValues = defaultValues.concat(values);
   defaultValues.length && this.setValues(defaultValues);
-  if (disables && disables.length) defaultDisables = disables;
+
+  if (!this.options.mergeOptionsFromData) {
+    defaultDisables = [];
+  }
+
+  if (disables && disables.length) defaultDisables = defaultDisables.concat(disables);
   defaultDisables.length && this.setDisables(defaultDisables);
   loaded && loaded.call(this);
-  console.timeEnd('init');
+
+  if (this.options.console) {
+    console.timeEnd('init');
+  }
 };
 
 Tree.prototype.load = function (callback) {
-  console.time('load');
+  var _this2 = this;
+
+  if (this.options.console) {
+    console.time('load');
+  }
+
   var _this$options2 = this.options,
       url = _this$options2.url,
       method = _this$options2.method,
@@ -277,7 +305,10 @@ Tree.prototype.load = function (callback) {
     method: method,
     success: function success(result) {
       var data = result;
-      console.timeEnd('load');
+
+      if (_this2.options.console) {
+        console.timeEnd('load');
+      }
 
       if (beforeLoad) {
         data = beforeLoad(result);
@@ -290,7 +321,13 @@ Tree.prototype.load = function (callback) {
 
 Tree.prototype.render = function (treeNodes) {
   var treeEle = Tree.createRootEle();
-  treeEle.appendChild(this.buildTree(treeNodes, 0));
+  var tree = this.buildTree(treeNodes, 0);
+
+  if (!this.options.rootNode) {
+    tree = tree.getElementsByTagName('ul').item(0);
+  }
+
+  treeEle.appendChild(tree);
   this.bindEvent(treeEle);
   var ele = document.querySelector(this.container);
   empty(ele);
@@ -298,18 +335,18 @@ Tree.prototype.render = function (treeNodes) {
 };
 
 Tree.prototype.buildTree = function (nodes, depth) {
-  var _this2 = this;
+  var _this3 = this;
 
-  var rootUlEle = Tree.createUlEle();
+  var rootUlEle = Tree.createUlEle(this.options);
 
   if (nodes && nodes.length) {
     nodes.forEach(function (node) {
-      var liEle = Tree.createLiEle(node, depth === _this2.options.closeDepth - 1);
-      _this2.liElementsById[node.id] = liEle;
+      var liEle = Tree.createLiEle(node, depth === _this3.options.closeDepth - 1, _this3.options);
+      _this3.liElementsById[node.id] = liEle;
       var ulEle = null;
 
       if (node.children && node.children.length) {
-        ulEle = _this2.buildTree(node.children, depth + 1);
+        ulEle = _this3.buildTree(node.children, depth + 1);
       }
 
       ulEle && liEle.appendChild(ulEle);
@@ -321,23 +358,26 @@ Tree.prototype.buildTree = function (nodes, depth) {
 };
 
 Tree.prototype.bindEvent = function (ele) {
-  var _this3 = this;
+  var _this4 = this;
 
   ele.addEventListener('click', function (e) {
     var target = e.target;
 
     if (target.nodeName === 'SPAN' && (target.classList.contains('treejs-checkbox') || target.classList.contains('treejs-label'))) {
-      _this3.onItemClick(target.parentNode.nodeId);
+      _this4.onItemClick(target.parentNode.nodeId);
     } else if (target.nodeName === 'LI' && target.classList.contains('treejs-node')) {
-      _this3.onItemClick(target.nodeId);
+      _this4.onItemClick(target.nodeId);
     } else if (target.nodeName === 'SPAN' && target.classList.contains('treejs-switcher')) {
-      _this3.onSwitcherClick(target);
+      _this4.onSwitcherClick(target);
     }
   }, false);
 };
 
 Tree.prototype.onItemClick = function (id) {
-  console.time('onItemClick');
+  if (this.options.console) {
+    console.time('onItemClick');
+  }
+
   var node = this.nodesById[id];
   var onChange = this.options.onChange;
 
@@ -347,7 +387,10 @@ Tree.prototype.onItemClick = function (id) {
   }
 
   onChange && onChange.call(this);
-  console.timeEnd('onItemClick');
+
+  if (this.options.console) {
+    console.timeEnd('onItemClick');
+  }
 };
 
 Tree.prototype.setValue = function (value) {
@@ -376,11 +419,11 @@ Tree.prototype.getValues = function () {
 };
 
 Tree.prototype.setValues = function (values) {
-  var _this4 = this;
+  var _this5 = this;
 
   this.emptyNodesCheckStatus();
   values.forEach(function (value) {
-    _this4.setValue(value);
+    _this5.setValue(value);
   });
   this.updateLiElements();
   var onChange = this.options.onChange;
@@ -415,11 +458,11 @@ Tree.prototype.getDisables = function () {
 };
 
 Tree.prototype.setDisables = function (values) {
-  var _this5 = this;
+  var _this6 = this;
 
   this.emptyNodesDisable();
   values.forEach(function (value) {
-    _this5.setDisable(value);
+    _this6.setDisable(value);
   });
   this.updateLiElements();
 };
@@ -467,10 +510,10 @@ Tree.prototype.getDisabledNodesById = function () {
 };
 
 Tree.prototype.updateLiElements = function () {
-  var _this6 = this;
+  var _this7 = this;
 
   Object.values(this.willUpdateNodesById).forEach(function (node) {
-    _this6.updateLiElement(node);
+    _this7.updateLiElement(node);
   });
   this.willUpdateNodesById = {};
 };
@@ -552,16 +595,16 @@ Tree.prototype.walkUp = function (node, changeState) {
 };
 
 Tree.prototype.walkDown = function (node, changeState) {
-  var _this7 = this;
+  var _this8 = this;
 
   if (node.children && node.children.length) {
     node.children.forEach(function (child) {
       if (changeState === 'status' && child.disabled) return;
       child[changeState] = node[changeState];
 
-      _this7.markWillUpdateNode(child);
+      _this8.markWillUpdateNode(child);
 
-      _this7.walkDown(child, changeState);
+      _this8.walkDown(child, changeState);
     });
   }
 };
@@ -634,20 +677,23 @@ Tree.createRootEle = function () {
   return div;
 };
 
-Tree.createUlEle = function () {
+Tree.createUlEle = function (options) {
   var ul = document.createElement('ul');
   ul.classList.add('treejs-nodes');
+  if (options && options.ulClass) ul.classList.add(options.ulClass);
   return ul;
 };
 
-Tree.createLiEle = function (node, closed) {
+Tree.createLiEle = function (node, closed, options) {
   var li = document.createElement('li');
   li.classList.add('treejs-node');
+  if (options && options.liClass) li.classList.add(options.liClass);
   if (closed) li.classList.add('treejs-node__close');
 
   if (node.children && node.children.length) {
     var switcher = document.createElement('span');
     switcher.classList.add('treejs-switcher');
+    if (options && options.switcherClass) switcher.classList.add(options.switcherClass);
     li.appendChild(switcher);
   } else {
     li.classList.add('treejs-placeholder');
@@ -655,9 +701,11 @@ Tree.createLiEle = function (node, closed) {
 
   var checkbox = document.createElement('span');
   checkbox.classList.add('treejs-checkbox');
+  if (options && options.checkboxClass) checkbox.classList.add(options.checkboxClass);
   li.appendChild(checkbox);
   var label = document.createElement('span');
   label.classList.add('treejs-label');
+  if (options && options.labelClass) label.classList.add(options.labelClass);
   var text = document.createTextNode(node.text);
   label.appendChild(text);
   li.appendChild(label);
@@ -1345,4 +1393,3 @@ module.exports = function (css) {
 /***/ })
 /******/ ])["default"];
 });
-//# sourceMappingURL=tree.js.map

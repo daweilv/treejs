@@ -7,7 +7,7 @@
     <title>
 
     </title>
-    <script src="dist/tree.min.js"></script>
+    <script src="dist/tree.js"></script>
 </head>
 
 <body>
@@ -15,22 +15,61 @@
     </div>
 </body>
 <script>
-    // prettier-ignore
-    let data = [{ "id": "0", "text": "node-0", "children": [{ "id": "0-0", "text": "node-0-0", "children": [{ "id": "0-0-0", "text": "node-0-0-0" }, { "id": "0-0-1", "text": "node-0-0-1" }, { "id": "0-0-2", "text": "node-0-0-2" }] }, { "id": "0-1", "text": "node-0-1", "children": [{ "id": "0-1-0", "text": "node-0-1-0" }, { "id": "0-1-1", "text": "node-0-1-1" }, { "id": "0-1-2", "text": "node-0-1-2" }] }, { "id": "0-2", "text": "node-0-2", "children": [{ "id": "0-2-0", "text": "node-0-2-0" }, { "id": "0-2-1", "text": "node-0-2-1" }, { "id": "0-2-2", "text": "node-0-2-2" }] }] }, { "id": "1", "text": "node-1", "children": [{ "id": "1-0", "text": "node-1-0", "children": [{ "id": "1-0-0", "text": "node-1-0-0" }, { "id": "1-0-1", "text": "node-1-0-1" }, { "id": "1-0-2", "text": "node-1-0-2" }] }, { "id": "1-1", "text": "node-1-1", "children": [{ "id": "1-1-0", "text": "node-1-1-0" }, { "id": "1-1-1", "text": "node-1-1-1" }, { "id": "1-1-2", "text": "node-1-1-2" }] }, { "id": "1-2", "text": "node-1-2", "children": [{ "id": "1-2-0", "text": "node-1-2-0" }, { "id": "1-2-1", "text": "node-1-2-1" }, { "id": "1-2-2", "text": "node-1-2-2" }] }] }, { "id": "2", "text": "node-2", "children": [{ "id": "2-0", "text": "node-2-0", "children": [{ "id": "2-0-0", "text": "node-2-0-0" }, { "id": "2-0-1", "text": "node-2-0-1" }, { "id": "2-0-2", "text": "node-2-0-2" }] }, { "id": "2-1", "text": "node-2-1", "children": [{ "id": "2-1-0", "text": "node-2-1-0" }, { "id": "2-1-1", "text": "node-2-1-1" }, { "id": "2-1-2", "text": "node-2-1-2" }] }, { "id": "2-2", "text": "node-2-2", "children": [{ "id": "2-2-0", "text": "node-2-2-0" }, { "id": "2-2-1", "text": "node-2-2-1" }, { "id": "2-2-2", "text": "node-2-2-2" }] }] }]
 
-    let tree = new Tree('.container', {
-        data: [{ id: '-1', text: 'root', children: data }],
-        closeDepth: 3,
-        loaded: function () {
-            this.values = ['0-0-0', '0-1-1'];
-            console.log(this.selectedNodes)
-            console.log(this.values)
-            this.disables = ['0-0-0', '0-0-1', '0-0-2']
+    const treeData = [
+        {
+            id: '0',
+            text: 'node-0',
+            children: [
+                {
+                    id: '0-0',
+                    text: 'node-0-0',
+                    checked: true,
+                    children: [
+                        {id: '0-0-0', text: 'node-0-0-0'},
+                        {id: '0-0-1', text: 'node-0-0-1'},
+                        {id: '0-0-2', text: 'node-0-0-2'},
+                    ],
+                },
+                {id: '0-1', text: 'node-0-1'},
+            ],
         },
-        onChange: function () {
+        {
+            id: '1',
+            text: 'node-1',
+            children: [{id: '1-0', text: 'node-1-0', disabled: true}, {id: '1-1', text: 'node-1-1'}],
+        },
+    ];
+
+    const myTree = new Tree('.container', {
+        data: treeData,
+
+        values: ['1', '2', '3'],
+        // only expand level 1 node
+        closeDepth: 1,
+
+        beforeLoad: function(rawData) {
+            function formatData() {
+                // do some format
+            }
+            return formatData(rawData);
+        },
+
+        loaded: function() {
+            // do something or set values after Tree loaded callback
+            // do not use arrow function `()=>` , if you use `this`, use function instead.
+            // this context bind current tree instance
             console.log(this.values);
-        }
-    })
+            //Replace the selected nodes
+            this.values = ['0-1'];
+            console.log(this.values);
+        },
+
+        onChange: function() {
+            console.log(this.values);
+        },
+    });
+
 </script>
 
 </html>
