@@ -55,7 +55,8 @@ import Tree from '@widgetjs/tree';
   "text": "node-0",
   "attributes": {},
   "children": [],
-  "check": true
+  "checked": true,
+  "disabled": false
 }
 ```
 
@@ -65,7 +66,8 @@ import Tree from '@widgetjs/tree';
 | text       | string  | tree node label                     | Required |
 | attributes | object  | custom attributes of the node       | Optional |
 | children   | array   | children of current node            | Optional |
-| check      | boolean | whether the node is selected or not | Optional |
+| checked      | boolean | whether the node is selected or not | Optional |
+| disabled      | boolean | whether the node is disabled or not | Optional |
 
 ### Example
 
@@ -83,10 +85,20 @@ const myTree = new Tree('#container', {
 | method     | string   | http method(GET/POST), default 'GET'                                |
 | data       | array    | the json tree data                                                  |
 | values     | array    | ids which you want to check                                         |
+| disables     | array    | ids which you want to disable                                         |
 | closeDepth | integer  | expand level                                                        |
 | beforeLoad | function | invoke before the tree load data. Format raw data in this function. |
 | loaded     | function | invoke after the tree load data                                     |
 | onChange   | function | invoke when the node status change                                  |
+| rootNode   | boolean  | shows the root node - Default: true                                  |
+| mergeOptionsFromData   | boolean | merge checked / disabled from data node with parameter values / disables - Default: true                                  |
+| ulClass   | string | add a CSS class to the ul-Element                                   |
+| liClass   | string | add a CSS class to the li-Element                                   |
+| checkboxClass   | string | add a CSS class to the checkbox                                  |
+| labelClass   | string | add a CSS class to the label                                   |
+| switcherClass   | string | add a CSS class to the switcher (expand / collapse Icon)                                   |
+| console   | boolean | shows the console output - Default false                                   |
+
 
 ### Example
 
@@ -99,6 +111,7 @@ const treeData = [
       {
         id: '0-0',
         text: 'node-0-0',
+        checked: true,
         children: [
           {id: '0-0-0', text: 'node-0-0-0'},
           {id: '0-0-1', text: 'node-0-0-1'},
@@ -111,7 +124,7 @@ const treeData = [
   {
     id: '1',
     text: 'node-1',
-    children: [{id: '1-0', text: 'node-1-0'}, {id: '1-1', text: 'node-1-1'}],
+    children: [{id: '1-0', text: 'node-1-0', disabled: true}, {id: '1-1', text: 'node-1-1'}],
   },
 ];
 
@@ -141,7 +154,10 @@ const myTree = new Tree('#container', {
     // do something or set values after Tree loaded callback
     // do not use arrow function `()=>` , if you use `this`, use function instead.
     // this context bind current tree instance
+    console.log(this.values);
+    //Replace the selected nodes
     this.values = ['0-1'];
+    console.log(this.values);
   },
 
   onChange: function() {
