@@ -495,8 +495,20 @@ Tree.createLiEle = function(node, closed) {
   li.appendChild(checkbox);
   const label = document.createElement('span');
   label.classList.add('treejs-label');
-  const text = document.createTextNode(node.text);
-  label.appendChild(text);
+  
+  // Optionally node with HTML if specified (else defaults to textNode)
+  const content =
+      (!!node.html)
+          ? (function (content) {
+              var node = document.createElement('span');
+              node.innerHTML = content;
+
+              return node;
+          })(node.html)
+
+          : document.createTextNode(node.text);
+  
+  label.appendChild(content);
   li.appendChild(label);
   li.nodeId = node.id;
   return li;
