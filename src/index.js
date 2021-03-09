@@ -167,7 +167,7 @@ Tree.prototype.buildTree = function(nodes, depth) {
     nodes.forEach(node => {
       const liEle = Tree.createLiEle(
         node,
-        depth === this.options.closeDepth - 1
+        depth >= this.options.closeDepth - 1
       );
       this.liElementsById[node.id] = liEle;
       let ulEle = null;
