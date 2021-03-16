@@ -5,6 +5,7 @@ export default function(_options) {
     async: true,
     success: null,
     failed: null,
+    data: {},
     'Content-Type': 'application/json; charset=utf-8',
   };
   const options = Object.assign(defaultOptions, _options);
