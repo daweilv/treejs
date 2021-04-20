@@ -340,6 +340,7 @@ Tree.prototype.onItemClick = function (id) {
   console.time('onItemClick');
   var node = this.nodesById[id];
   var onChange = this.options.onChange;
+  var onNodeSelect = this.options.onNodeSelect;
 
   if (!node.disabled) {
     this.setValue(id);
@@ -347,6 +348,7 @@ Tree.prototype.onItemClick = function (id) {
   }
 
   onChange && onChange.call(this);
+  onNodeSelect && onNodeSelect(node);
   console.timeEnd('onItemClick');
 };
 
