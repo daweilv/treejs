@@ -212,11 +212,13 @@ Tree.prototype.onItemClick = function(id) {
   console.time('onItemClick');
   const node = this.nodesById[id];
   const {onChange} = this.options;
+  const { onNodeSelect } = this.options;
   if (!node.disabled) {
     this.setValue(id);
     this.updateLiElements();
   }
   onChange && onChange.call(this);
+  onNodeSelect && onNodeSelect(node);
   console.timeEnd('onItemClick');
 };
 
