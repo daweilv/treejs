@@ -55,7 +55,7 @@ import Tree from '@widgetjs/tree';
   "text": "node-0",
   "attributes": {},
   "children": [],
-  "check": true
+  "checked": true
 }
 ```
 
@@ -65,7 +65,7 @@ import Tree from '@widgetjs/tree';
 | text       | string  | tree node label                     | Required |
 | attributes | object  | custom attributes of the node       | Optional |
 | children   | array   | children of current node            | Optional |
-| check      | boolean | whether the node is selected or not | Optional |
+| checked      | boolean | whether the node is selected or not | Optional |
 
 ### Example
 
