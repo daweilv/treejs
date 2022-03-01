@@ -1,7 +1,6 @@
 # @widgetjs/tree
 
 [![NPM version](https://img.shields.io/npm/v/@widgetjs/tree.svg?style=flat-square)](https://npmjs.org/package/@widgetjs/tree)
-[![David deps](https://img.shields.io/david/daweilv/treejs.svg?style=flat-square)](https://david-dm.org/daweilv/treejs)
 [![npm downloads](https://img.shields.io/npm/dm/@widgetjs/tree.svg?style=flat-square)](https://www.npmjs.com/package/@widgetjs/tree)
 [![gzip size](https://flat.badgen.net/bundlephobia/minzip/@widgetjs/tree)](https://bundlephobia.com/result?p=@widgetjs/tree)
 
