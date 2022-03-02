@@ -1,7 +1,8 @@
 # @widgetjs/tree
 
-[![NPM version](https://img.shields.io/npm/v/@widgetjs/tree.svg?style=flat-square)](https://npmjs.org/package/@widgetjs/tree)
-[![npm downloads](https://img.shields.io/npm/dm/@widgetjs/tree.svg?style=flat-square)](https://www.npmjs.com/package/@widgetjs/tree)
+[![Version](https://img.shields.io/npm/v/@widgetjs/tree?style=flat)](https://npmjs.com/package/@widgetjs/tree)
+[![Downloads Total](https://img.shields.io/npm/dt/@widgetjs/tree.svg?style=flat-square)](https://npmjs.com/package/@widgetjs/tree)
+[![Downloads Monthly](https://img.shields.io/npm/dm/@widgetjs/tree.svg?style=flat-square)](https://www.npmjs.com/package/@widgetjs/tree)
 [![gzip size](https://flat.badgen.net/bundlephobia/minzip/@widgetjs/tree)](https://bundlephobia.com/result?p=@widgetjs/tree)
 
 A lightweight flexible tree widget.
