@@ -159,6 +159,17 @@ function animation(duration, callback) {
   });
 }
 
+function collapseFromLeaf(tree, leafNode) {
+  try {
+    var nodeLiElement = tree.liElementsById[leafNode.parent.id];
+    if (!nodeLiElement.classList.contains('treejs-node__close')) nodeLiElement.getElementsByClassName('treejs-switcher')[0].click();
+  } catch (error) {
+    return;
+  }
+
+  if (leafNode.hasOwnProperty('parent')) collapseFromLeaf(tree, leafNode.parent);
+}
+
 function Tree(container, options) {
   var _this = this;
 
@@ -593,6 +604,15 @@ Tree.prototype.updateLiElement = function (node) {
     case false:
       if (classList.contains('treejs-node__disabled')) classList.remove('treejs-node__disabled');
       break;
+  }
+};
+
+Tree.prototype.collapseAll = function () {
+  var leafNodesById = this.leafNodesById;
+
+  for (var id in leafNodesById) {
+    var leafNode = leafNodesById[id];
+    collapseFromLeaf(this, leafNode);
   }
 };
 

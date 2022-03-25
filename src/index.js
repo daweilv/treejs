@@ -34,6 +34,18 @@ function animation(duration, callback) {
   });
 }
 
+function collapseFromLeaf(tree, leafNode) {
+  try {
+    const nodeLiElement = tree.liElementsById[leafNode.parent.id];
+    if(!nodeLiElement.classList.contains('treejs-node__close'))
+      nodeLiElement.getElementsByClassName('treejs-switcher')[0].click();
+  } catch (error) {
+    return;
+  }
+  if(leafNode.hasOwnProperty('parent'))
+    collapseFromLeaf(tree, leafNode.parent);
+}
+
 export default function Tree(container, options) {
   const defaultOptions = {
     selectMode: 'checkbox',
@@ -437,6 +449,14 @@ Tree.prototype.updateLiElement = function(node) {
       break;
   }
 };
+
+Tree.prototype.collapseAll = function() {
+  const leafNodesById = this.leafNodesById;
+  for(let id in leafNodesById) {
+    const leafNode = leafNodesById[id];
+    collapseFromLeaf(this, leafNode);
+  }
+}
 
 Tree.parseTreeData = function(data) {
   const treeNodes = deepClone(data);
