@@ -170,6 +170,37 @@ function collapseFromLeaf(tree, leafNode) {
   if (leafNode.hasOwnProperty('parent')) collapseFromLeaf(tree, leafNode.parent);
 }
 
+function expandFromRoot(tree, root) {
+  var nodeLiElement = tree.liElementsById[root.id];
+  if (nodeLiElement.classList.contains('treejs-node__close')) nodeLiElement.getElementsByClassName('treejs-switcher')[0].click();
+
+  if (root.hasOwnProperty('children')) {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = root.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var child = _step.value;
+        expandFromRoot(tree, child);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  }
+}
+
 function Tree(container, options) {
   var _this = this;
 
@@ -614,6 +645,10 @@ Tree.prototype.collapseAll = function () {
     var leafNode = leafNodesById[id];
     collapseFromLeaf(this, leafNode);
   }
+};
+
+Tree.prototype.expandAll = function () {
+  expandFromRoot(this, this.treeNodes[0]);
 };
 
 Tree.parseTreeData = function (data) {

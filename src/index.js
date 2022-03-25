@@ -46,6 +46,15 @@ function collapseFromLeaf(tree, leafNode) {
     collapseFromLeaf(tree, leafNode.parent);
 }
 
+function expandFromRoot(tree, root) {
+  const nodeLiElement = tree.liElementsById[root.id];
+  if(nodeLiElement.classList.contains('treejs-node__close'))
+    nodeLiElement.getElementsByClassName('treejs-switcher')[0].click();
+  if(root.hasOwnProperty('children'))
+    for(let child of root.children)
+      expandFromRoot(tree, child);
+}
+
 export default function Tree(container, options) {
   const defaultOptions = {
     selectMode: 'checkbox',
@@ -456,6 +465,10 @@ Tree.prototype.collapseAll = function() {
     const leafNode = leafNodesById[id];
     collapseFromLeaf(this, leafNode);
   }
+}
+
+Tree.prototype.expandAll = function() {
+  expandFromRoot(this, this.treeNodes[0]);
 }
 
 Tree.parseTreeData = function(data) {
