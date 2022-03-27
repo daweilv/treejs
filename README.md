@@ -202,6 +202,13 @@ const disabledNodes = myTree.disabledNodes;
 | loaded     | null         | invoke after the tree load data    |
 | onChange   | null         | invoke when the node status change |
 
+## Methods
+
+| Method      | Parameters   | Description                        |
+| ----------- | ------------ | ---------------------------------- |
+| expandAll   | null         | expand all tree nodes              |
+| collapseAll | null         | collapse all tree nodes            |
+
 ## License
 
 [MIT](./LICENSE)
