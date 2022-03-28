@@ -237,7 +237,7 @@ Tree.prototype.onItemClick = function(id) {
     this.setValue(id);
     this.updateLiElements();
   }
-  onChange && onChange.call(this);
+  onChange && onChange.call(this, id);
   console.timeEnd('onItemClick');
 };
 
