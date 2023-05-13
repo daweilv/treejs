@@ -1,9 +1,10 @@
 # @widgetjs/tree
 
-[![NPM version](https://img.shields.io/npm/v/@widgetjs/tree.svg?style=flat-square)](https://npmjs.org/package/@widgetjs/tree)
-[![David deps](https://img.shields.io/david/daweilv/treejs.svg?style=flat-square)](https://david-dm.org/daweilv/treejs)
-[![npm downloads](https://img.shields.io/npm/dm/@widgetjs/tree.svg?style=flat-square)](https://www.npmjs.com/package/@widgetjs/tree)
+[![Version](https://img.shields.io/npm/v/@widgetjs/tree?style=flat)](https://npmjs.com/package/@widgetjs/tree)
+[![Downloads Total](https://img.shields.io/npm/dt/@widgetjs/tree.svg?style=flat-square)](https://npmjs.com/package/@widgetjs/tree)
+[![Downloads Monthly](https://img.shields.io/npm/dm/@widgetjs/tree.svg?style=flat-square)](https://www.npmjs.com/package/@widgetjs/tree)
 [![gzip size](https://flat.badgen.net/bundlephobia/minzip/@widgetjs/tree)](https://bundlephobia.com/result?p=@widgetjs/tree)
+[![gzip size](https://img.shields.io/github/stars/daweilv/treejs?style=social)](https://github.com/daweilv/treejs)
 
 A lightweight flexible tree widget.
 
@@ -55,7 +56,7 @@ import Tree from '@widgetjs/tree';
   "text": "node-0",
   "attributes": {},
   "children": [],
-  "check": true
+  "checked": true
 }
 ```
 
@@ -65,7 +66,7 @@ import Tree from '@widgetjs/tree';
 | text       | string  | tree node label                     | Required |
 | attributes | object  | custom attributes of the node       | Optional |
 | children   | array   | children of current node            | Optional |
-| check      | boolean | whether the node is selected or not | Optional |
+| checked      | boolean | whether the node is selected or not | Optional |
 
 ### Example
 
@@ -200,6 +201,13 @@ const disabledNodes = myTree.disabledNodes;
 | beforeLoad | current data | invoke before the tree load data   |
 | loaded     | null         | invoke after the tree load data    |
 | onChange   | null         | invoke when the node status change |
+
+## Methods
+
+| Method      | Parameters   | Description                        |
+| ----------- | ------------ | ---------------------------------- |
+| expandAll   | null         | expand all tree nodes              |
+| collapseAll | null         | collapse all tree nodes            |
 
 ## License
 
