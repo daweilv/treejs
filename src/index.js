@@ -65,6 +65,7 @@ export default function Tree(container, options) {
         url: null,
         method: 'GET',
         closeDepth: null,
+        rtl: false
     };
     this.treeNodes = [];
     this.nodesById = {};
@@ -179,6 +180,10 @@ Tree.prototype.load = function (callback) {
 
 Tree.prototype.render = function (treeNodes) {
     const treeEle = Tree.createRootEle();
+
+    if (this.options.rtl) {
+        treeEle.classList.add("treejs-rtl")
+    }
     treeEle.appendChild(this.buildTree(treeNodes, 0));
     this.bindEvent(treeEle);
     const ele = document.querySelector(this.container);
