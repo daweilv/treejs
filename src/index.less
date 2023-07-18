@@ -51,18 +51,49 @@
       border-top: 4px solid rgba(0, 0, 0, 0.4);
       transition: border-color 150ms;
     }
+
     &:hover:before {
       border-top: 4px solid rgba(0, 0, 0, 0.65);
     }
+
   }
+
   .treejs-node__close > .treejs-switcher {
     transform: rotate(-90deg);
   }
+
   .treejs-node__close > .treejs-nodes {
     height: 0;
   }
 
   .treejs-checkbox {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    position: relative;
+
+
+    &:before {
+      transition: all 0.3s;
+      cursor: pointer;
+      position: absolute;
+      top: 2px;
+      content: ' ';
+      display: block;
+      width: 16px;
+      height: 16px;
+      border: 1px solid @greyborder;
+      border-radius: 2px;
+    }
+
+    &:hover:before {
+      box-shadow: 0 0 2px 1px @bluebg;
+    }
+  }
+
+  .treejs-radio {
     display: inline-block;
     vertical-align: middle;
     width: 20px;
@@ -80,18 +111,21 @@
       width: 16px;
       height: 16px;
       border: 1px solid @greyborder;
-      border-radius: 2px;
+      border-radius: 250%;
     }
+
     &:hover:before {
       box-shadow: 0 0 2px 1px @bluebg;
     }
   }
+
   .treejs-node__checked {
     & > .treejs-checkbox {
       &:before {
         background-color: @bluebg;
         border-color: @bluebg;
       }
+
       &:after {
         position: absolute;
         content: ' ';
@@ -106,13 +140,52 @@
         transform: rotate(45deg);
       }
     }
+
+    & > .treejs-radio {
+      &:before {
+        background-color: white;
+        border-color: @bluebg;
+      }
+
+      &:after {
+        position: absolute;
+        content: ' ';
+        left: 4px;
+        top: 6px;
+        display: block;
+        border-radius: 50%;
+        background: @bluebg;
+        width: 8px;
+        height: 8px;
+      }
+    }
   }
+
   .treejs-node__halfchecked {
     & > .treejs-checkbox {
       &:before {
         background-color: @bluebg;
         border-color: @bluebg;
       }
+
+      &:after {
+        position: absolute;
+        content: ' ';
+        display: block;
+        top: 9px;
+        left: 3px;
+        width: 10px;
+        height: 2px;
+        background-color: #fff;
+      }
+    }
+
+    & > .treejs-radio {
+      &:before {
+        background-color: @bluebg;
+        border-color: @bluebg;
+      }
+
       &:after {
         position: absolute;
         content: ' ';
@@ -129,41 +202,86 @@
   .treejs-node__disabled {
     cursor: not-allowed;
     color: rgba(0, 0, 0, 0.25);
+
     .treejs-checkbox {
       cursor: not-allowed;
+
       &:before {
         cursor: not-allowed;
         border-color: @greyborder !important;
         background-color: @bgcolor-disable !important;
       }
+
       &:hover:before {
         box-shadow: none !important;
       }
     }
+
+    .treejs-radio {
+      cursor: not-allowed;
+
+      &:before {
+        cursor: not-allowed;
+        border-color: @greyborder !important;
+        background-color: @bgcolor-disable !important;
+      }
+
+      &:hover:before {
+        box-shadow: none !important;
+      }
+    }
+
     .treejs-node__checked {
       & > .treejs-checkbox {
         &:after {
           border-color: @greyborder;
         }
       }
+
+      & > .treejs-radio {
+        &:after {
+          border-color: @greyborder;
+        }
+      }
     }
+
     .treejs-node__halfchecked {
       & > .treejs-checkbox {
         &:after {
           background-color: @greyborder;
         }
       }
+
+      & > .treejs-radio {
+        &:after {
+          background-color: @greyborder;
+        }
+      }
     }
   }
+
   .treejs-node__disabled.treejs-node__checked {
     & > .treejs-checkbox {
       &:after {
         border-color: @greyborder;
       }
     }
+
+    & > .treejs-radio {
+      &:after {
+        border-color: @greyborder;
+      }
+    }
   }
+
   .treejs-node__disabled.treejs-node__halfchecked {
     & > .treejs-checkbox {
+      &:after {
+        background-color: @greyborder;
+      }
+    }
+
+    & > .treejs-radio {
       &:after {
         background-color: @greyborder;
       }
@@ -172,5 +290,87 @@
 
   .treejs-label {
     vertical-align: middle;
+  }
+
+  &.treejs-rtl {
+    direction: rtl;
+
+    & > .treejs-node {
+      padding-right: 0;
+    }
+
+    .treejs-nodes {
+      list-style: none;
+      padding-right: 20px;
+      overflow: hidden;
+      transition: height 150ms ease-out, opacity 150ms ease-out;
+    }
+
+    .treejs-node {
+      cursor: pointer;
+      overflow: hidden;
+
+      &.treejs-placeholder {
+        padding-right: 20px;
+      }
+    }
+
+    .treejs-switcher {
+      display: inline-block;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 150ms ease-out;
+
+      &:before {
+        border-bottom: none;
+        border-top: 4px solid rgba(0, 0, 0, 0.4);
+      }
+
+      &:hover:before {
+        border-bottom: none;
+        border-top: 4px solid rgba(0, 0, 0, 0.65);
+      }
+
+    }
+
+    .treejs-node__close > .treejs-switcher {
+
+      &:before {
+        border-top: none;
+        border-bottom: 4px solid rgba(0, 0, 0, 0.4);
+      }
+
+      &:hover:before {
+        border-top: none;
+        border-bottom: 4px solid rgba(0, 0, 0, 0.65);
+      }
+    }
+
+    .treejs-node__checked {
+      & > .treejs-checkbox {
+        &:after {
+          right: 5px;
+          transform: rotate(45deg);
+        }
+      }
+
+      & > .treejs-radio {
+        &:after {
+          right: 4px;
+        }
+      }
+    }
+
+    .treejs-node__halfchecked {
+      & > .treejs-checkbox {
+        &:after {
+          right: 3px;
+        }
+      }
+    }
+
   }
 }
